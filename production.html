@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width,initial-scale=1">
+
+<title>Production Entry</title>
+
+<style>
+
+*{box-sizing:border-box}
+
+body{
+margin:0;
+font-family:Arial;
+background:#eef2ff;
+color:#0f172a
+}
+
+.header{
+background:linear-gradient(
+135deg,#1e3a8a,#2563eb
+);
+color:white;
+padding:20px;
+text-align:center
+}
+
+.container{
+max-width:800px;
+margin:auto;
+padding:20px
+}
+
+.card{
+background:white;
+border-radius:20px;
+padding:25px;
+box-shadow:0 10px 30px rgba(0,0,0,.08)
+}
+
+h2{
+margin-top:0
+}
+
+label{
+font-weight:bold;
+display:block;
+margin-top:15px;
+margin-bottom:6px
+}
+
+input,select,textarea{
+
+width:100%;
+padding:13px;
+border:1px solid #cbd5e1;
+border-radius:10px;
+font-size:15px
+
+}
+
+textarea{
+min-height:90px
+}
+
+button{
+
+border:0;
+padding:14px 20px;
+border-radius:10px;
+cursor:pointer;
+font-weight:bold
+
+}
+
+.save{
+background:#16a34a;
+color:white;
+width:100%;
+margin-top:20px
+}
+
+.back{
+background:#64748b;
+color:white;
+margin-bottom:15px
+}
+
+#msg{
+margin-top:15px;
+text-align:center;
+font-weight:bold
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+
+<h1>🏗️ Production Data Entry</h1>
+
+</div>
+
+<div class="container">
+
+<button class="back"
+onclick="location.href='home.html'">
+⬅️ Back
+</button>
+
+<div class="card">
+
+<h2>🏭 Machine Production Information</h2>
+
+<label>Asset Number *</label>
+<input id="assetNumber">
+
+<label>Machine Shop</label>
+
+<select id="machineShop">
+
+<option value="">Select Shop</option>
+<option>Machine Shop 1</option>
+<option>Machine Shop 2</option>
+
+</select>
+
+<label>Production Line</label>
+<input id="productionLine">
+
+<label>Machine Location</label>
+<input id="machineLocation">
+
+<label>Machine Parts</label>
+<input id="machineParts">
+
+<label>Operation / Process</label>
+<input id="operationProcess">
+
+<label>Part Number</label>
+<input id="partNumber">
+
+<label>Part Name</label>
+<input id="partName">
+
+<label>Machine Status</label>
+
+<select id="machineStatus">
+
+<option>Running</option>
+<option>Idle</option>
+<option>Breakdown</option>
+<option>Under Maintenance</option>
+<option>Not In Use</option>
+
+</select>
+
+<label>CT — Cycle Time</label>
+<input id="ctCycleTime">
+
+<label>Remarks</label>
+<textarea id="remarks"></textarea>
+
+<button class="save"
+onclick="saveProduction()">
+
+💾 Save Production Data
+
+</button>
+
+<div id="msg"></div>
+
+</div>
+
+</div>
+
+<script>
+
+const API_URL =
+"YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL";
+
+const token =
+sessionStorage.getItem("machine_token");
+
+const user =
+JSON.parse(
+sessionStorage.getItem("machine_user") || "null"
+);
+
+if(!token || !user || 
+(!user.production && user.role!=="Administrator")){
+
+location.href="index.html";
+
+}
+
+
+async function api(data){
+
+const response =
+await fetch(API_URL,{
+method:"POST",
+headers:{
+"Content-Type":
+"text/plain;charset=utf-8"
+},
+body:JSON.stringify(data)
+});
+
+return await response.json();
+
+}
+
+
+async function saveProduction(){
+
+const assetNumber =
+document.getElementById(
+"assetNumber"
+).value.trim();
+
+if(!assetNumber){
+
+alert("Asset Number required.");
+
+return;
+
+}
+
+const production={
+
+assetNumber,
+
+machineShop:
+document.getElementById(
+"machineShop"
+).value,
+
+productionLine:
+document.getElementById(
+"productionLine"
+).value,
+
+machineLocation:
+document.getElementById(
+"machineLocation"
+).value,
+
+machineParts:
+document.getElementById(
+"machineParts"
+).value,
+
+operationProcess:
+document.getElementById(
+"operationProcess"
+).value,
+
+partNumber:
+document.getElementById(
+"partNumber"
+).value,
+
+partName:
+document.getElementById(
+"partName"
+).value,
+
+machineStatus:
+document.getElementById(
+"machineStatus"
+).value,
+
+ctCycleTime:
+document.getElementById(
+"ctCycleTime"
+).value,
+
+remarks:
+document.getElementById(
+"remarks"
+).value
+
+};
+
+document.getElementById("msg")
+.innerHTML="⏳ Saving...";
+
+try{
+
+const result =
+await api({
+
+action:"saveProduction",
+
+token:token,
+
+production:production
+
+});
+
+if(result.success){
+
+document.getElementById("msg")
+.innerHTML=
+"✅ " + result.message;
+
+document
+.querySelectorAll("input,textarea")
+.forEach(x=>x.value="");
+
+document.getElementById(
+"machineShop"
+).value="";
+
+}else{
+
+document.getElementById("msg")
+.innerHTML=
+"❌ " + result.message;
+
+}
+
+}catch(e){
+
+document.getElementById("msg")
+.innerHTML=
+"❌ Connection error.";
+
+}
+
+}
+
+</script>
+
+</body>
+</html>
