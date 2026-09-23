@@ -8,338 +8,1308 @@
 <meta name="viewport"
 content="width=device-width,initial-scale=1">
 
-<title>Production Entry</title>
+<title>Production Data Entry | MAMS</title>
 
 <style>
 
-*{box-sizing:border-box}
+*{
+box-sizing:border-box;
+}
 
 body{
 margin:0;
-font-family:Arial;
-background:#eef2ff;
-color:#0f172a
+font-family:Arial,Helvetica,sans-serif;
+background:
+linear-gradient(135deg,#eef2ff,#f8fafc);
+color:#0f172a;
+min-height:100vh;
 }
+
+/* HEADER */
 
 .header{
-background:linear-gradient(
-135deg,#1e3a8a,#2563eb
-);
+background:
+linear-gradient(135deg,#0f172a,#1e40af,#2563eb);
 color:white;
-padding:20px;
-text-align:center
+padding:24px 20px;
+text-align:center;
+box-shadow:0 5px 20px rgba(0,0,0,.15);
 }
 
-.container{
-max-width:800px;
-margin:auto;
-padding:20px
+.header h1{
+margin:0;
+font-size:27px;
 }
+
+.header p{
+margin:7px 0 0;
+opacity:.85;
+}
+
+/* CONTAINER */
+
+.container{
+max-width:900px;
+margin:auto;
+padding:20px;
+}
+
+/* BACK BUTTON */
+
+.back{
+background:#64748b;
+color:white;
+border:0;
+padding:11px 18px;
+border-radius:10px;
+cursor:pointer;
+font-weight:bold;
+margin-bottom:15px;
+}
+
+.back:hover{
+background:#475569;
+}
+
+/* CARD */
 
 .card{
 background:white;
 border-radius:20px;
 padding:25px;
-box-shadow:0 10px 30px rgba(0,0,0,.08)
+box-shadow:
+0 10px 30px rgba(15,23,42,.08);
 }
 
-h2{
-margin-top:0
+.card h2{
+margin-top:0;
+margin-bottom:22px;
 }
+
+/* GRID */
+
+.grid{
+display:grid;
+grid-template-columns:
+repeat(auto-fit,minmax(250px,1fr));
+gap:17px;
+}
+
+/* FORM */
 
 label{
-font-weight:bold;
 display:block;
-margin-top:15px;
-margin-bottom:6px
+font-weight:bold;
+margin-bottom:7px;
 }
 
-input,select,textarea{
-
+input,
+select,
+textarea{
 width:100%;
 padding:13px;
 border:1px solid #cbd5e1;
 border-radius:10px;
-font-size:15px
+font-size:15px;
+background:white;
+outline:none;
+}
 
+input:focus,
+select:focus,
+textarea:focus{
+border-color:#2563eb;
+box-shadow:
+0 0 0 3px rgba(37,99,235,.10);
 }
 
 textarea{
-min-height:90px
+min-height:90px;
+resize:vertical;
 }
 
-button{
+/* MULTI SELECT */
 
-border:0;
-padding:14px 20px;
-border-radius:10px;
+.multiBox{
+border:1px solid #cbd5e1;
+border-radius:12px;
+background:white;
+overflow:hidden;
+}
+
+.multiHeader{
+padding:13px;
 cursor:pointer;
-font-weight:bold
-
+display:flex;
+justify-content:space-between;
+align-items:center;
+font-weight:bold;
+background:#f8fafc;
 }
+
+.multiHeader:hover{
+background:#f1f5f9;
+}
+
+.arrow{
+font-size:14px;
+}
+
+.options{
+display:none;
+max-height:320px;
+overflow-y:auto;
+border-top:1px solid #e2e8f0;
+padding:8px;
+}
+
+.options.show{
+display:block;
+}
+
+.option{
+display:flex;
+align-items:center;
+gap:10px;
+padding:9px 8px;
+border-radius:8px;
+cursor:pointer;
+}
+
+.option:hover{
+background:#eff6ff;
+}
+
+.option input{
+width:18px;
+height:18px;
+cursor:pointer;
+}
+
+.selectedText{
+font-weight:normal;
+color:#475569;
+}
+
+/* SELECT ALL */
+
+.selectAll{
+background:#eff6ff;
+padding:9px;
+border-radius:8px;
+margin-bottom:5px;
+font-weight:bold;
+color:#1d4ed8;
+}
+
+/* SAVE */
 
 .save{
-background:#16a34a;
-color:white;
 width:100%;
-margin-top:20px
+border:0;
+padding:15px;
+border-radius:12px;
+margin-top:22px;
+background:
+linear-gradient(135deg,#16a34a,#15803d);
+color:white;
+font-size:17px;
+font-weight:bold;
+cursor:pointer;
+box-shadow:
+0 6px 15px rgba(22,163,74,.2);
 }
 
-.back{
-background:#64748b;
-color:white;
-margin-bottom:15px
+.save:hover{
+transform:translateY(-1px);
 }
+
+/* MESSAGE */
 
 #msg{
-margin-top:15px;
 text-align:center;
-font-weight:bold
+font-weight:bold;
+margin-top:17px;
+min-height:24px;
+}
+
+/* REQUIRED */
+
+.required{
+color:#dc2626;
+}
+
+/* MOBILE */
+
+@media(max-width:600px){
+
+.container{
+padding:12px;
+}
+
+.card{
+padding:18px;
+border-radius:15px;
+}
+
+.header h1{
+font-size:22px;
+}
+
+.grid{
+grid-template-columns:1fr;
+}
+
 }
 
 </style>
 
 </head>
 
+
 <body>
+
+
+<!-- HEADER -->
 
 <div class="header">
 
 <h1>🏗️ Production Data Entry</h1>
 
+<p>Machine Asset & Production Information</p>
+
 </div>
+
 
 <div class="container">
 
+
 <button class="back"
 onclick="location.href='home.html'">
-⬅️ Back
+
+⬅️ Back to Home
+
 </button>
+
 
 <div class="card">
 
 <h2>🏭 Machine Production Information</h2>
 
-<label>Asset Number *</label>
-<input id="assetNumber">
 
-<label>Machine Shop</label>
+<div class="grid">
+
+
+<!-- ASSET -->
+
+<div>
+
+<label>
+Asset Number
+<span class="required">*</span>
+</label>
+
+<input
+id="assetNumber"
+placeholder="Enter machine asset number">
+
+</div>
+
+
+<!-- MACHINE SHOP -->
+
+<div>
+
+<label>🏭 Machine Shop</label>
 
 <select id="machineShop">
 
-<option value="">Select Shop</option>
-<option>Machine Shop 1</option>
-<option>Machine Shop 2</option>
+<option value="">
+Select Machine Shop
+</option>
+
+<option value="Machine Shop 1">
+Machine Shop 1
+</option>
+
+<option value="Machine Shop 2">
+Machine Shop 2
+</option>
+
+<option value="Machine Shop 3">
+Machine Shop 3
+</option>
+
+<option value="Machine Shop 4">
+Machine Shop 4
+</option>
 
 </select>
 
-<label>Production Line</label>
-<input id="productionLine">
+</div>
 
-<label>Machine Location</label>
-<input id="machineLocation">
 
-<label>Machine Parts</label>
-<input id="machineParts">
+<!-- PRODUCTION LINE -->
 
-<label>Operation / Process</label>
-<input id="operationProcess">
+<div>
 
-<label>Part Number</label>
-<input id="partNumber">
+<label>🏗️ Production Line</label>
 
-<label>Part Name</label>
-<input id="partName">
+<select id="productionLine">
 
-<label>Machine Status</label>
+<option value="">
+Select Production Line
+</option>
+
+<option>Axle 385</option>
+
+<option>Sump 385</option>
+
+<option>Hyd. Lift Cover</option>
+
+<option>Cylinder 240/385</option>
+
+<option>Spacer Block/Adaptor Plate/PTO</option>
+
+<option>Rear Wheel 1st and 2nd</option>
+
+<option>Diff Case 385 (set)</option>
+
+<option>Piston 240/385</option>
+
+<option>Front Support 850/85-56/350/385</option>
+
+<option>Diff Plate</option>
+
+<option>FAS 480</option>
+
+<option>Diff Case 480</option>
+
+<option>Tube Final Drive 480/640/850</option>
+
+<option>Hub 240/385/480</option>
+
+<option>Support Splitter</option>
+
+<option>Small Parts</option>
+
+<option>Axle Casing 480/850/85-56</option>
+
+<option>Casing Gear Box 480/850</option>
+
+</select>
+
+</div>
+
+
+<!-- PROCESS LOCATION -->
+
+<div>
+
+<label>📍 Process Location</label>
+
+<select id="processLocation">
+
+<option value="">
+Select Process Location
+</option>
+
+<option>1</option>
+<option>2</option>
+<option>3</option>
+<option>4</option>
+<option>5</option>
+<option>6</option>
+<option>7</option>
+<option>8</option>
+<option>9</option>
+<option>10</option>
+<option>11</option>
+<option>12</option>
+<option>13</option>
+<option>14</option>
+<option>15</option>
+<option>16</option>
+<option>17</option>
+<option>18</option>
+<option>19</option>
+<option>20</option>
+<option>21</option>
+<option>22</option>
+<option>23</option>
+<option>24</option>
+<option>25</option>
+<option>26</option>
+<option>27</option>
+<option>28</option>
+<option>29</option>
+<option>30</option>
+
+</select>
+
+</div>
+
+
+<!-- OPERATION -->
+
+<div>
+
+<label>⚙️ Operation / Process</label>
+
+<input
+id="operationProcess"
+placeholder="Enter operation / process">
+
+</div>
+
+
+<!-- MACHINE STATUS -->
+
+<div>
+
+<label>🚦 Machine Status</label>
 
 <select id="machineStatus">
 
-<option>Running</option>
-<option>Idle</option>
-<option>Breakdown</option>
-<option>Under Maintenance</option>
-<option>Not In Use</option>
+<option value="Running">
+🟢 Running
+</option>
+
+<option value="Idle">
+🟡 Idle
+</option>
+
+<option value="Breakdown">
+🔴 Breakdown
+</option>
+
+<option value="Under Maintenance">
+🔧 Under Maintenance
+</option>
+
+<option value="Not In Use">
+⚪ Not In Use
+</option>
 
 </select>
 
-<label>CT — Cycle Time</label>
-<input id="ctCycleTime">
+</div>
 
-<label>Remarks</label>
-<textarea id="remarks"></textarea>
 
-<button class="save"
+<!-- CT -->
+
+<div>
+
+<label>⏱️ CT — Cycle Time</label>
+
+<input
+id="ctCycleTime"
+placeholder="e.g. 45 sec">
+
+</div>
+
+
+</div>
+
+
+<!-- PART NAME -->
+
+<div style="margin-top:18px">
+
+<label>🔩 Part Name</label>
+
+<div class="multiBox">
+
+
+<div
+class="multiHeader"
+onclick="toggleParts()">
+
+<span id="selectedPartsText"
+class="selectedText">
+
+Select one or more parts
+
+</span>
+
+<span class="arrow"
+id="partArrow">
+
+▼
+
+</span>
+
+</div>
+
+
+<div
+id="partOptions"
+class="options">
+
+
+<div class="selectAll">
+
+<label style="
+display:flex;
+align-items:center;
+gap:10px;
+margin:0;
+">
+
+<input
+type="checkbox"
+id="selectAllParts"
+onclick="selectAllParts(event)">
+
+Select / Deselect All
+
+</label>
+
+</div>
+
+
+<div class="option">
+<input type="checkbox" value="Axle 385">
+<span>Axle 385</span>
+</div>
+
+<div class="option">
+<input type="checkbox" value="Sump 385">
+<span>Sump 385</span>
+</div>
+
+<div class="option">
+<input type="checkbox" value="Hyd. Lift Cover">
+<span>Hyd. Lift Cover</span>
+</div>
+
+<div class="option">
+<input type="checkbox" value="Cylinder 240">
+<span>Cylinder 240</span>
+</div>
+
+<div class="option">
+<input type="checkbox" value="Cylinder 385">
+<span>Cylinder 385</span>
+</div>
+
+<div class="option">
+<input type="checkbox" value="FAS 350">
+<span>FAS 350</span>
+</div>
+
+<div class="option">
+<input type="checkbox" value="Spacer Block">
+<span>Spacer Block</span>
+</div>
+
+<div class="option">
+<input type="checkbox" value="Adaptor Plate">
+<span>Adaptor Plate</span>
+</div>
+
+<div class="option">
+<input type="checkbox" value="PTO cover">
+<span>PTO cover</span>
+</div>
+
+<div class="option">
+<input type="checkbox" value="Rear Wheel 1st">
+<span>Rear Wheel 1st</span>
+</div>
+
+<div class="option">
+<input type="checkbox" value="Rear Wheel 2nd">
+<span>Rear Wheel 2nd</span>
+</div>
+
+<div class="option">
+<input type="checkbox" value="Diff Case 385">
+<span>Diff Case 385</span>
+</div>
+
+<div class="option">
+<input type="checkbox" value="Piston 240">
+<span>Piston 240</span>
+</div>
+
+<div class="option">
+<input type="checkbox" value="Piston 385">
+<span>Piston 385</span>
+</div>
+
+<div class="option">
+<input type="checkbox" value="Front Support 350">
+<span>Front Support 350</span>
+</div>
+
+<div class="option">
+<input type="checkbox" value="Front Support 385">
+<span>Front Support 385</span>
+</div>
+
+<div class="option">
+<input type="checkbox" value="Front Support 850">
+<span>Front Support 850</span>
+</div>
+
+<div class="option">
+<input type="checkbox" value="Front Support 85-56">
+<span>Front Support 85-56</span>
+</div>
+
+<div class="option">
+<input type="checkbox" value="Diff Plate">
+<span>Diff Plate</span>
+</div>
+
+<div class="option">
+<input type="checkbox" value="FAS 480">
+<span>FAS 480</span>
+</div>
+
+<div class="option">
+<input type="checkbox" value="Diff Case 480">
+<span>Diff Case 480</span>
+</div>
+
+<div class="option">
+<input type="checkbox" value="Tube Final Drive 480">
+<span>Tube Final Drive 480</span>
+</div>
+
+<div class="option">
+<input type="checkbox" value="Tube Final Drive 640">
+<span>Tube Final Drive 640</span>
+</div>
+
+<div class="option">
+<input type="checkbox" value="Tube Final Drive 850">
+<span>Tube Final Drive 850</span>
+</div>
+
+<div class="option">
+<input type="checkbox" value="Hub 240">
+<span>Hub 240</span>
+</div>
+
+<div class="option">
+<input type="checkbox" value="Hub 385">
+<span>Hub 385</span>
+</div>
+
+<div class="option">
+<input type="checkbox" value="Hub 480">
+<span>Hub 480</span>
+</div>
+
+<div class="option">
+<input type="checkbox" value="Support Splitter">
+<span>Support Splitter</span>
+</div>
+
+<div class="option">
+<input type="checkbox" value="Pivat">
+<span>Pivat</span>
+</div>
+
+<div class="option">
+<input type="checkbox" value="padel">
+<span>padel</span>
+</div>
+
+<div class="option">
+<input type="checkbox" value="conntoin">
+<span>conntoin</span>
+</div>
+
+<div class="option">
+<input type="checkbox" value="Axle Casing 480">
+<span>Axle Casing 480</span>
+</div>
+
+<div class="option">
+<input type="checkbox" value="Axle Casing 850">
+<span>Axle Casing 850</span>
+</div>
+
+<div class="option">
+<input type="checkbox" value="Axle Casing 85-56">
+<span>Axle Casing 85-56</span>
+</div>
+
+<div class="option">
+<input type="checkbox" value="Casing Gear Box 480">
+<span>Casing Gear Box 480</span>
+</div>
+
+<div class="option">
+<input type="checkbox" value="Casing Gear Box 850">
+<span>Casing Gear Box 850</span>
+</div>
+
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- REMARKS -->
+
+<div style="margin-top:18px">
+
+<label>📝 Remarks</label>
+
+<textarea
+id="remarks"
+placeholder="Additional information..."></textarea>
+
+</div>
+
+
+<button
+class="save"
 onclick="saveProduction()">
 
 💾 Save Production Data
 
 </button>
 
+
 <div id="msg"></div>
 
+
 </div>
 
 </div>
+
 
 <script>
+
+
+/* ==========================================
+   GOOGLE APPS SCRIPT URL
+========================================== */
 
 const API_URL =
 "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL";
 
+
+/* ==========================================
+   LOGIN CHECK
+========================================== */
+
 const token =
-sessionStorage.getItem("machine_token");
+sessionStorage.getItem(
+"machine_token"
+);
 
 const user =
 JSON.parse(
-sessionStorage.getItem("machine_user") || "null"
+sessionStorage.getItem(
+"machine_user"
+) || "null"
 );
 
-if(!token || !user || 
-(!user.production && user.role!=="Administrator")){
+
+if(
+!token ||
+!user ||
+(
+!user.production &&
+user.role !== "Administrator"
+)
+){
 
 location.href="index.html";
 
 }
 
 
+/* ==========================================
+   API
+========================================== */
+
 async function api(data){
 
 const response =
-await fetch(API_URL,{
+await fetch(
+API_URL,
+{
 method:"POST",
+
 headers:{
 "Content-Type":
 "text/plain;charset=utf-8"
 },
+
 body:JSON.stringify(data)
-});
+
+}
+);
 
 return await response.json();
 
 }
 
 
+/* ==========================================
+   MULTI SELECT
+========================================== */
+
+function toggleParts(){
+
+const box =
+document.getElementById(
+"partOptions"
+);
+
+box.classList.toggle("show");
+
+const arrow =
+document.getElementById(
+"partArrow"
+);
+
+arrow.innerText =
+box.classList.contains("show")
+? "▲"
+: "▼";
+
+}
+
+
+/* ==========================================
+   PART CHECKBOX CHANGE
+========================================== */
+
+document
+.querySelectorAll(
+"#partOptions .option input"
+)
+.forEach(
+checkbox => {
+
+checkbox.addEventListener(
+"change",
+updateSelectedParts
+);
+
+}
+);
+
+
+/* ==========================================
+   SELECT ALL
+========================================== */
+
+function selectAllParts(event){
+
+event.stopPropagation();
+
+const checked =
+document.getElementById(
+"selectAllParts"
+).checked;
+
+document
+.querySelectorAll(
+"#partOptions .option input"
+)
+.forEach(
+checkbox => {
+
+checkbox.checked =
+checked;
+
+}
+);
+
+updateSelectedParts();
+
+}
+
+
+/* ==========================================
+   UPDATE SELECTED TEXT
+========================================== */
+
+function updateSelectedParts(){
+
+const selected =
+Array.from(
+document.querySelectorAll(
+"#partOptions .option input:checked"
+)
+)
+.map(
+checkbox => checkbox.value
+);
+
+
+const text =
+document.getElementById(
+"selectedPartsText"
+);
+
+
+if(selected.length === 0){
+
+text.innerText =
+"Select one or more parts";
+
+text.style.color =
+"#64748b";
+
+}else{
+
+text.innerText =
+selected.length +
+" part(s) selected";
+
+text.style.color =
+"#0f172a";
+
+}
+
+
+/* Update Select All */
+
+const all =
+document.querySelectorAll(
+"#partOptions .option input"
+);
+
+const checked =
+document.querySelectorAll(
+"#partOptions .option input:checked"
+);
+
+document.getElementById(
+"selectAllParts"
+).checked =
+all.length > 0 &&
+all.length === checked.length;
+
+}
+
+
+/* ==========================================
+   CLOSE DROPDOWN WHEN CLICK OUTSIDE
+========================================== */
+
+document.addEventListener(
+"click",
+function(event){
+
+const box =
+document.querySelector(
+".multiBox"
+);
+
+if(
+box &&
+!box.contains(event.target)
+){
+
+document
+.getElementById(
+"partOptions"
+)
+.classList.remove("show");
+
+document.getElementById(
+"partArrow"
+).innerText="▼";
+
+}
+
+}
+);
+
+
+/* ==========================================
+   SAVE PRODUCTION
+========================================== */
+
 async function saveProduction(){
 
 const assetNumber =
-document.getElementById(
+document
+.getElementById(
 "assetNumber"
-).value.trim();
+)
+.value.trim();
+
 
 if(!assetNumber){
 
-alert("Asset Number required.");
+alert(
+"⚠️ Asset Number is required."
+);
 
 return;
 
 }
 
-const production={
+
+/* Selected Parts */
+
+const selectedParts =
+Array.from(
+document.querySelectorAll(
+"#partOptions .option input:checked"
+)
+)
+.map(
+checkbox => checkbox.value
+);
+
+
+if(selectedParts.length === 0){
+
+alert(
+"⚠️ Please select at least one Part Name."
+);
+
+return;
+
+}
+
+
+/* Data */
+
+const production = {
+
+assetNumber:
 
 assetNumber,
 
+
 machineShop:
-document.getElementById(
+
+document
+.getElementById(
 "machineShop"
-).value,
+)
+.value,
+
 
 productionLine:
-document.getElementById(
+
+document
+.getElementById(
 "productionLine"
-).value,
+)
+.value,
+
+
+/*
+Machine Location has been
+replaced by Process Location
+*/
 
 machineLocation:
-document.getElementById(
-"machineLocation"
-).value,
+
+document
+.getElementById(
+"processLocation"
+)
+.value,
+
+
+/*
+Multiple parts are saved
+as comma-separated values.
+*/
 
 machineParts:
-document.getElementById(
-"machineParts"
-).value,
+
+selectedParts.join(", "),
+
 
 operationProcess:
-document.getElementById(
-"operationProcess"
-).value,
 
-partNumber:
-document.getElementById(
-"partNumber"
-).value,
+document
+.getElementById(
+"operationProcess"
+)
+.value,
+
+
+/*
+Part Number no longer used.
+*/
+
+partNumber:"",
+
 
 partName:
-document.getElementById(
-"partName"
-).value,
+
+selectedParts.join(", "),
+
 
 machineStatus:
-document.getElementById(
+
+document
+.getElementById(
 "machineStatus"
-).value,
+)
+.value,
+
 
 ctCycleTime:
-document.getElementById(
+
+document
+.getElementById(
 "ctCycleTime"
-).value,
+)
+.value,
+
 
 remarks:
-document.getElementById(
+
+document
+.getElementById(
 "remarks"
-).value
+)
+.value
 
 };
 
-document.getElementById("msg")
-.innerHTML="⏳ Saving...";
+
+document.getElementById(
+"msg"
+).innerHTML =
+"⏳ Saving data...";
+
 
 try{
+
 
 const result =
 await api({
 
-action:"saveProduction",
+action:
+"saveProduction",
 
-token:token,
+token:
+token,
 
-production:production
+production:
+production
 
 });
 
+
 if(result.success){
 
-document.getElementById("msg")
-.innerHTML=
-"✅ " + result.message;
+document.getElementById(
+"msg"
+).innerHTML =
+"✅ " +
+result.message;
+
+
+clearForm();
+
+
+}else{
+
+document.getElementById(
+"msg"
+).innerHTML =
+"❌ " +
+result.message;
+
+}
+
+
+}catch(error){
+
+console.error(error);
+
+document.getElementById(
+"msg"
+).innerHTML =
+"❌ Connection error. Please try again.";
+
+}
+
+}
+
+
+/* ==========================================
+   CLEAR FORM
+========================================== */
+
+function clearForm(){
 
 document
-.querySelectorAll("input,textarea")
-.forEach(x=>x.value="");
+.querySelectorAll(
+"input, textarea"
+)
+.forEach(
+element => {
+
+if(
+element.type !== "checkbox"
+){
+
+element.value="";
+
+}
+
+}
+);
+
+
+/* Reset selects */
 
 document.getElementById(
 "machineShop"
 ).value="";
 
-}else{
+document.getElementById(
+"productionLine"
+).value="";
 
-document.getElementById("msg")
-.innerHTML=
-"❌ " + result.message;
+document.getElementById(
+"processLocation"
+).value="";
+
+document.getElementById(
+"machineStatus"
+).value="Running";
+
+
+/* Reset parts */
+
+document
+.querySelectorAll(
+"#partOptions .option input"
+)
+.forEach(
+checkbox => {
+
+checkbox.checked=false;
 
 }
+);
 
-}catch(e){
+document.getElementById(
+"selectAllParts"
+).checked=false;
 
-document.getElementById("msg")
-.innerHTML=
-"❌ Connection error.";
 
-}
+updateSelectedParts();
 
 }
 
 </script>
 
 </body>
+
 </html>
