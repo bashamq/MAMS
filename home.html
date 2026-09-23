@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Machine Asset System</title>
+
+<style>
+
+*{box-sizing:border-box}
+
+body{
+margin:0;
+font-family:Arial,sans-serif;
+background:#f1f5f9;
+color:#0f172a
+}
+
+.header{
+background:linear-gradient(135deg,#0f172a,#1d4ed8);
+color:white;
+padding:25px;
+text-align:center
+}
+
+.header h1{
+margin:0
+}
+
+.user{
+margin-top:8px;
+opacity:.8
+}
+
+.container{
+max-width:1000px;
+margin:auto;
+padding:25px
+}
+
+.grid{
+display:grid;
+grid-template-columns:
+repeat(auto-fit,minmax(220px,1fr));
+gap:20px
+}
+
+.card{
+background:white;
+padding:25px;
+border-radius:20px;
+box-shadow:
+0 8px 25px rgba(0,0,0,.08);
+cursor:pointer;
+transition:.2s
+}
+
+.card:hover{
+transform:translateY(-4px);
+box-shadow:
+0 15px 35px rgba(0,0,0,.15)
+}
+
+.icon{
+font-size:45px
+}
+
+.title{
+font-size:20px;
+font-weight:bold;
+margin-top:12px
+}
+
+.desc{
+color:#64748b;
+margin-top:7px
+}
+
+.logout{
+margin-top:25px;
+background:#ef4444;
+color:white;
+border:0;
+padding:13px 25px;
+border-radius:10px;
+cursor:pointer
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+
+<h1>🏭 Machine Asset Management</h1>
+
+<div class="user" id="userInfo"></div>
+
+</div>
+
+<div class="container">
+
+<div class="grid">
+
+<div class="card"
+id="productionCard"
+onclick="location.href='production.html'">
+
+<div class="icon">🏗️</div>
+
+<div class="title">
+Production Entry
+</div>
+
+<div class="desc">
+Machine production information
+</div>
+
+</div>
+
+
+<div class="card"
+id="maintenanceCard"
+onclick="location.href='maintenance.html'">
+
+<div class="icon">🔧</div>
+
+<div class="title">
+Maintenance Entry
+</div>
+
+<div class="desc">
+Machine technical & child assets
+</div>
+
+</div>
+
+
+<div class="card"
+id="dashboardCard"
+onclick="location.href='dashboard.html'">
+
+<div class="icon">📊</div>
+
+<div class="title">
+Dashboard
+</div>
+
+<div class="desc">
+Machine asset overview
+</div>
+
+</div>
+
+
+<div class="card"
+id="adminCard"
+onclick="location.href='dashboard.html#users'">
+
+<div class="icon">👥</div>
+
+<div class="title">
+User Management
+</div>
+
+<div class="desc">
+Administrator only
+</div>
+
+</div>
+
+</div>
+
+<button class="logout"
+onclick="logout()">
+🚪 Logout
+</button>
+
+</div>
+
+<script>
+
+const token =
+sessionStorage.getItem("machine_token");
+
+const user =
+JSON.parse(
+sessionStorage.getItem("machine_user") || "null"
+);
+
+if(!token || !user){
+
+location.href="index.html";
+}
+
+document.getElementById("userInfo").innerText =
+"👤 " +
+(user.displayName || user.username) +
+" • " +
+user.role;
+
+
+if(
+user.role !== "Administrator"
+&& !user.production
+){
+
+document.getElementById(
+"productionCard"
+).style.display="none";
+
+}
+
+
+if(
+user.role !== "Administrator"
+&& !user.maintenance
+){
+
+document.getElementById(
+"maintenanceCard"
+).style.display="none";
+
+}
+
+
+if(
+user.role !== "Administrator"
+&& !user.dashboard
+){
+
+document.getElementById(
+"dashboardCard"
+).style.display="none";
+
+}
+
+
+if(
+user.role !== "Administrator"
+){
+
+document.getElementById(
+"adminCard"
+).style.display="none";
+
+}
+
+
+async function logout(){
+
+sessionStorage.clear();
+
+location.href="index.html";
+
+}
+
+</script>
+
+</body>
+</html>
