@@ -25,7 +25,7 @@ color:#0f172a;
 min-height:100vh;
 }
 
-/* HEADER */
+/* ================= HEADER ================= */
 
 .header{
 background:
@@ -46,15 +46,15 @@ margin:7px 0 0;
 opacity:.85;
 }
 
-/* CONTAINER */
+/* ================= CONTAINER ================= */
 
 .container{
-max-width:900px;
+max-width:950px;
 margin:auto;
 padding:20px;
 }
 
-/* BACK BUTTON */
+/* ================= BUTTON ================= */
 
 .back{
 background:#64748b;
@@ -71,7 +71,7 @@ margin-bottom:15px;
 background:#475569;
 }
 
-/* CARD */
+/* ================= CARD ================= */
 
 .card{
 background:white;
@@ -79,6 +79,7 @@ border-radius:20px;
 padding:25px;
 box-shadow:
 0 10px 30px rgba(15,23,42,.08);
+margin-bottom:20px;
 }
 
 .card h2{
@@ -86,7 +87,7 @@ margin-top:0;
 margin-bottom:22px;
 }
 
-/* GRID */
+/* ================= GRID ================= */
 
 .grid{
 display:grid;
@@ -95,7 +96,7 @@ repeat(auto-fit,minmax(250px,1fr));
 gap:17px;
 }
 
-/* FORM */
+/* ================= FORM ================= */
 
 label{
 display:block;
@@ -128,7 +129,7 @@ min-height:90px;
 resize:vertical;
 }
 
-/* MULTI SELECT */
+/* ================= MULTI SELECT ================= */
 
 .multiBox{
 border:1px solid #cbd5e1;
@@ -191,7 +192,7 @@ font-weight:normal;
 color:#475569;
 }
 
-/* SELECT ALL */
+/* ================= SELECT ALL ================= */
 
 .selectAll{
 background:#eff6ff;
@@ -202,7 +203,7 @@ font-weight:bold;
 color:#1d4ed8;
 }
 
-/* SAVE */
+/* ================= SAVE ================= */
 
 .save{
 width:100%;
@@ -224,7 +225,113 @@ box-shadow:
 transform:translateY(-1px);
 }
 
-/* MESSAGE */
+/* ================= REVIEW ================= */
+
+.review{
+display:none;
+}
+
+.reviewHeader{
+background:
+linear-gradient(135deg,#0f766e,#059669);
+color:white;
+padding:22px;
+border-radius:16px 16px 0 0;
+margin:-25px -25px 20px -25px;
+}
+
+.reviewHeader h2{
+margin:0 0 5px 0;
+}
+
+.reviewHeader p{
+margin:0;
+opacity:.85;
+}
+
+.summaryGrid{
+display:grid;
+grid-template-columns:
+repeat(auto-fit,minmax(250px,1fr));
+gap:12px;
+}
+
+.summaryItem{
+background:#f8fafc;
+border:1px solid #e2e8f0;
+border-radius:12px;
+padding:14px;
+}
+
+.summaryLabel{
+font-size:12px;
+font-weight:bold;
+color:#64748b;
+text-transform:uppercase;
+margin-bottom:5px;
+}
+
+.summaryValue{
+font-size:16px;
+font-weight:bold;
+word-break:break-word;
+}
+
+.partsSummary{
+margin-top:18px;
+}
+
+.partTag{
+display:inline-block;
+background:#dbeafe;
+color:#1d4ed8;
+padding:7px 10px;
+border-radius:20px;
+margin:4px;
+font-size:13px;
+font-weight:bold;
+}
+
+.reviewButtons{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px;
+margin-top:22px;
+}
+
+.editBtn{
+background:#f59e0b;
+color:white;
+border:0;
+padding:14px;
+border-radius:10px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.confirmBtn{
+background:#16a34a;
+color:white;
+border:0;
+padding:14px;
+border-radius:10px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.cancelBtn{
+background:#64748b;
+color:white;
+border:0;
+padding:14px;
+border-radius:10px;
+font-weight:bold;
+cursor:pointer;
+width:100%;
+margin-top:10px;
+}
+
+/* ================= MESSAGE ================= */
 
 #msg{
 text-align:center;
@@ -233,13 +340,11 @@ margin-top:17px;
 min-height:24px;
 }
 
-/* REQUIRED */
-
 .required{
 color:#dc2626;
 }
 
-/* MOBILE */
+/* ================= MOBILE ================= */
 
 @media(max-width:600px){
 
@@ -260,6 +365,10 @@ font-size:22px;
 grid-template-columns:1fr;
 }
 
+.reviewButtons{
+grid-template-columns:1fr;
+}
+
 }
 
 </style>
@@ -270,7 +379,7 @@ grid-template-columns:1fr;
 <body>
 
 
-<!-- HEADER -->
+<!-- ================= HEADER ================= -->
 
 <div class="header">
 
@@ -292,7 +401,12 @@ onclick="location.href='home.html'">
 </button>
 
 
-<div class="card">
+<!-- ==================================================
+     ENTRY FORM
+================================================== -->
+
+<div class="card"
+id="entryCard">
 
 <h2>🏭 Machine Production Information</h2>
 
@@ -362,39 +476,22 @@ Select Production Line
 </option>
 
 <option>Axle 385</option>
-
 <option>Sump 385</option>
-
 <option>Hyd. Lift Cover</option>
-
 <option>Cylinder 240/385</option>
-
 <option>Spacer Block/Adaptor Plate/PTO</option>
-
 <option>Rear Wheel 1st and 2nd</option>
-
 <option>Diff Case 385 (set)</option>
-
 <option>Piston 240/385</option>
-
 <option>Front Support 850/85-56/350/385</option>
-
 <option>Diff Plate</option>
-
 <option>FAS 480</option>
-
 <option>Diff Case 480</option>
-
 <option>Tube Final Drive 480/640/850</option>
-
 <option>Hub 240/385/480</option>
-
 <option>Support Splitter</option>
-
 <option>Small Parts</option>
-
 <option>Axle Casing 480/850/85-56</option>
-
 <option>Casing Gear Box 480/850</option>
 
 </select>
@@ -512,7 +609,9 @@ placeholder="e.g. 45 sec">
 </div>
 
 
-<!-- PART NAME -->
+<!-- ==================================================
+     PART NAME
+================================================== -->
 
 <div style="margin-top:18px">
 
@@ -525,14 +624,16 @@ placeholder="e.g. 45 sec">
 class="multiHeader"
 onclick="toggleParts()">
 
-<span id="selectedPartsText"
+<span
+id="selectedPartsText"
 class="selectedText">
 
 Select one or more parts
 
 </span>
 
-<span class="arrow"
+<span
+class="arrow"
 id="partArrow">
 
 ▼
@@ -568,185 +669,16 @@ Select / Deselect All
 </div>
 
 
-<div class="option">
-<input type="checkbox" value="Axle 385">
-<span>Axle 385</span>
-</div>
+<!-- PARTS -->
 
-<div class="option">
-<input type="checkbox" value="Sump 385">
-<span>Sump 385</span>
-</div>
+<script>
 
-<div class="option">
-<input type="checkbox" value="Hyd. Lift Cover">
-<span>Hyd. Lift Cover</span>
-</div>
+/*
+Parts are generated by JavaScript
+below.
+*/
 
-<div class="option">
-<input type="checkbox" value="Cylinder 240">
-<span>Cylinder 240</span>
-</div>
-
-<div class="option">
-<input type="checkbox" value="Cylinder 385">
-<span>Cylinder 385</span>
-</div>
-
-<div class="option">
-<input type="checkbox" value="FAS 350">
-<span>FAS 350</span>
-</div>
-
-<div class="option">
-<input type="checkbox" value="Spacer Block">
-<span>Spacer Block</span>
-</div>
-
-<div class="option">
-<input type="checkbox" value="Adaptor Plate">
-<span>Adaptor Plate</span>
-</div>
-
-<div class="option">
-<input type="checkbox" value="PTO cover">
-<span>PTO cover</span>
-</div>
-
-<div class="option">
-<input type="checkbox" value="Rear Wheel 1st">
-<span>Rear Wheel 1st</span>
-</div>
-
-<div class="option">
-<input type="checkbox" value="Rear Wheel 2nd">
-<span>Rear Wheel 2nd</span>
-</div>
-
-<div class="option">
-<input type="checkbox" value="Diff Case 385">
-<span>Diff Case 385</span>
-</div>
-
-<div class="option">
-<input type="checkbox" value="Piston 240">
-<span>Piston 240</span>
-</div>
-
-<div class="option">
-<input type="checkbox" value="Piston 385">
-<span>Piston 385</span>
-</div>
-
-<div class="option">
-<input type="checkbox" value="Front Support 350">
-<span>Front Support 350</span>
-</div>
-
-<div class="option">
-<input type="checkbox" value="Front Support 385">
-<span>Front Support 385</span>
-</div>
-
-<div class="option">
-<input type="checkbox" value="Front Support 850">
-<span>Front Support 850</span>
-</div>
-
-<div class="option">
-<input type="checkbox" value="Front Support 85-56">
-<span>Front Support 85-56</span>
-</div>
-
-<div class="option">
-<input type="checkbox" value="Diff Plate">
-<span>Diff Plate</span>
-</div>
-
-<div class="option">
-<input type="checkbox" value="FAS 480">
-<span>FAS 480</span>
-</div>
-
-<div class="option">
-<input type="checkbox" value="Diff Case 480">
-<span>Diff Case 480</span>
-</div>
-
-<div class="option">
-<input type="checkbox" value="Tube Final Drive 480">
-<span>Tube Final Drive 480</span>
-</div>
-
-<div class="option">
-<input type="checkbox" value="Tube Final Drive 640">
-<span>Tube Final Drive 640</span>
-</div>
-
-<div class="option">
-<input type="checkbox" value="Tube Final Drive 850">
-<span>Tube Final Drive 850</span>
-</div>
-
-<div class="option">
-<input type="checkbox" value="Hub 240">
-<span>Hub 240</span>
-</div>
-
-<div class="option">
-<input type="checkbox" value="Hub 385">
-<span>Hub 385</span>
-</div>
-
-<div class="option">
-<input type="checkbox" value="Hub 480">
-<span>Hub 480</span>
-</div>
-
-<div class="option">
-<input type="checkbox" value="Support Splitter">
-<span>Support Splitter</span>
-</div>
-
-<div class="option">
-<input type="checkbox" value="Pivat">
-<span>Pivat</span>
-</div>
-
-<div class="option">
-<input type="checkbox" value="padel">
-<span>padel</span>
-</div>
-
-<div class="option">
-<input type="checkbox" value="conntoin">
-<span>conntoin</span>
-</div>
-
-<div class="option">
-<input type="checkbox" value="Axle Casing 480">
-<span>Axle Casing 480</span>
-</div>
-
-<div class="option">
-<input type="checkbox" value="Axle Casing 850">
-<span>Axle Casing 850</span>
-</div>
-
-<div class="option">
-<input type="checkbox" value="Axle Casing 85-56">
-<span>Axle Casing 85-56</span>
-</div>
-
-<div class="option">
-<input type="checkbox" value="Casing Gear Box 480">
-<span>Casing Gear Box 480</span>
-</div>
-
-<div class="option">
-<input type="checkbox" value="Casing Gear Box 850">
-<span>Casing Gear Box 850</span>
-</div>
+</script>
 
 
 </div>
@@ -756,7 +688,9 @@ Select / Deselect All
 </div>
 
 
-<!-- REMARKS -->
+<!-- ==================================================
+     REMARKS
+================================================== -->
 
 <div style="margin-top:18px">
 
@@ -771,17 +705,208 @@ placeholder="Additional information..."></textarea>
 
 <button
 class="save"
-onclick="saveProduction()">
+onclick="reviewData()">
 
-💾 Save Production Data
+👁️ Review & Continue
 
 </button>
 
 
 <div id="msg"></div>
 
+</div>
+
+
+<!-- ==================================================
+     REVIEW / SUMMARY
+================================================== -->
+
+<div class="card review"
+id="reviewCard">
+
+
+<div class="reviewHeader">
+
+<h2>📋 Review Production Entry</h2>
+
+<p>
+Please check all information before saving.
+</p>
 
 </div>
+
+
+<div class="summaryGrid">
+
+
+<div class="summaryItem">
+
+<div class="summaryLabel">
+Asset Number
+</div>
+
+<div
+class="summaryValue"
+id="rAsset">
+-
+</div>
+
+</div>
+
+
+<div class="summaryItem">
+
+<div class="summaryLabel">
+Machine Shop
+</div>
+
+<div
+class="summaryValue"
+id="rShop">
+-
+</div>
+
+</div>
+
+
+<div class="summaryItem">
+
+<div class="summaryLabel">
+Production Line
+</div>
+
+<div
+class="summaryValue"
+id="rLine">
+-
+</div>
+
+</div>
+
+
+<div class="summaryItem">
+
+<div class="summaryLabel">
+Process Location
+</div>
+
+<div
+class="summaryValue"
+id="rLocation">
+-
+</div>
+
+</div>
+
+
+<div class="summaryItem">
+
+<div class="summaryLabel">
+Operation / Process
+</div>
+
+<div
+class="summaryValue"
+id="rOperation">
+-
+</div>
+
+</div>
+
+
+<div class="summaryItem">
+
+<div class="summaryLabel">
+Machine Status
+</div>
+
+<div
+class="summaryValue"
+id="rStatus">
+-
+</div>
+
+</div>
+
+
+<div class="summaryItem">
+
+<div class="summaryLabel">
+CT — Cycle Time
+</div>
+
+<div
+class="summaryValue"
+id="rCT">
+-
+</div>
+
+</div>
+
+
+</div>
+
+
+<div class="partsSummary">
+
+<div class="summaryLabel">
+🔩 Selected Parts
+</div>
+
+<div id="rParts"></div>
+
+</div>
+
+
+<div class="summaryItem"
+style="margin-top:15px">
+
+<div class="summaryLabel">
+📝 Remarks
+</div>
+
+<div
+class="summaryValue"
+id="rRemarks">
+-
+</div>
+
+</div>
+
+
+<div class="reviewButtons">
+
+<button
+class="editBtn"
+onclick="editData()">
+
+✏️ Edit Information
+
+</button>
+
+
+<button
+class="confirmBtn"
+onclick="confirmSave()">
+
+✅ Confirm & Save
+
+</button>
+
+</div>
+
+
+<button
+class="cancelBtn"
+onclick="editData()">
+
+↩️ Go Back & Change
+
+</button>
+
+
+</div>
+
 
 </div>
 
@@ -789,17 +914,17 @@ onclick="saveProduction()">
 <script>
 
 
-/* ==========================================
-   GOOGLE APPS SCRIPT URL
-========================================== */
+/* ==================================================
+   API URL
+================================================== */
 
 const API_URL =
 "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL";
 
 
-/* ==========================================
+/* ==================================================
    LOGIN CHECK
-========================================== */
+================================================== */
 
 const token =
 sessionStorage.getItem(
@@ -828,9 +953,128 @@ location.href="index.html";
 }
 
 
-/* ==========================================
+/* ==================================================
+   PART LIST
+================================================== */
+
+const PARTS = [
+
+"Axle 385",
+"Sump 385",
+"Hyd. Lift Cover",
+"Cylinder 240",
+"Cylinder 385",
+"FAS 350",
+"Spacer Block",
+"Adaptor Plate",
+"PTO Cover",
+"Rear Wheel 1st",
+"Rear Wheel 2nd",
+"Diff Case 385",
+"Piston 240",
+"Piston 385",
+"Front Support 350",
+"Front Support 385",
+"Front Support 850",
+"Front Support 85-56",
+"Diff Plate",
+"FAS 480",
+"Diff Case 480",
+"Tube Final Drive 480",
+"Tube Final Drive 640",
+"Tube Final Drive 850",
+"Hub 240",
+"Hub 385",
+"Hub 480",
+"Support Splitter",
+"Pivot",
+"Pedal",
+"Connection",
+"Axle Casing 480",
+"Axle Casing 850",
+"Axle Casing 85-56",
+"Casing Gear Box 480",
+"Casing Gear Box 850"
+
+];
+
+
+/* ==================================================
+   GENERATE PART CHECKBOXES
+================================================== */
+
+function createPartOptions(){
+
+const container =
+document.getElementById(
+"partOptions"
+);
+
+const selectAll =
+container.querySelector(
+".selectAll"
+);
+
+
+/* Remove old options */
+
+container
+.querySelectorAll(
+".option"
+)
+.forEach(
+el=>el.remove()
+);
+
+
+/* Create */
+
+PARTS.forEach(part=>{
+
+const div =
+document.createElement("div");
+
+div.className="option";
+
+div.innerHTML=`
+
+<input
+type="checkbox"
+value="${escapeHtml(part)}">
+
+<span>
+${escapeHtml(part)}
+</span>
+
+`;
+
+container.appendChild(div);
+
+});
+
+
+/* Events */
+
+container
+.querySelectorAll(
+".option input"
+)
+.forEach(
+checkbox=>{
+
+checkbox.addEventListener(
+"change",
+updateSelectedParts
+);
+
+});
+
+}
+
+
+/* ==================================================
    API
-========================================== */
+================================================== */
 
 async function api(data){
 
@@ -855,9 +1099,9 @@ return await response.json();
 }
 
 
-/* ==========================================
-   MULTI SELECT
-========================================== */
+/* ==================================================
+   PART DROPDOWN
+================================================== */
 
 function toggleParts(){
 
@@ -868,42 +1112,15 @@ document.getElementById(
 
 box.classList.toggle("show");
 
-const arrow =
 document.getElementById(
 "partArrow"
-);
-
-arrow.innerText =
+).innerText =
 box.classList.contains("show")
 ? "▲"
 : "▼";
 
 }
 
-
-/* ==========================================
-   PART CHECKBOX CHANGE
-========================================== */
-
-document
-.querySelectorAll(
-"#partOptions .option input"
-)
-.forEach(
-checkbox => {
-
-checkbox.addEventListener(
-"change",
-updateSelectedParts
-);
-
-}
-);
-
-
-/* ==========================================
-   SELECT ALL
-========================================== */
 
 function selectAllParts(event){
 
@@ -919,35 +1136,22 @@ document
 "#partOptions .option input"
 )
 .forEach(
-checkbox => {
+checkbox=>{
 
 checkbox.checked =
 checked;
 
-}
-);
+});
 
 updateSelectedParts();
 
 }
 
 
-/* ==========================================
-   UPDATE SELECTED TEXT
-========================================== */
-
 function updateSelectedParts(){
 
 const selected =
-Array.from(
-document.querySelectorAll(
-"#partOptions .option input:checked"
-)
-)
-.map(
-checkbox => checkbox.value
-);
-
+getSelectedParts();
 
 const text =
 document.getElementById(
@@ -955,7 +1159,7 @@ document.getElementById(
 );
 
 
-if(selected.length === 0){
+if(selected.length===0){
 
 text.innerText =
 "Select one or more parts";
@@ -974,8 +1178,6 @@ text.style.color =
 
 }
 
-
-/* Update Select All */
 
 const all =
 document.querySelectorAll(
@@ -996,9 +1198,21 @@ all.length === checked.length;
 }
 
 
-/* ==========================================
-   CLOSE DROPDOWN WHEN CLICK OUTSIDE
-========================================== */
+function getSelectedParts(){
+
+return Array.from(
+document.querySelectorAll(
+"#partOptions .option input:checked"
+)
+)
+.map(
+checkbox=>checkbox.value
+);
+
+}
+
+
+/* Close dropdown */
 
 document.addEventListener(
 "click",
@@ -1030,21 +1244,49 @@ document.getElementById(
 );
 
 
-/* ==========================================
-   SAVE PRODUCTION
-========================================== */
+/* ==================================================
+   REVIEW DATA
+================================================== */
 
-async function saveProduction(){
+function reviewData(){
 
-const assetNumber =
-document
-.getElementById(
+const asset =
+document.getElementById(
 "assetNumber"
-)
-.value.trim();
+).value.trim();
+
+const shop =
+document.getElementById(
+"machineShop"
+).value;
+
+const line =
+document.getElementById(
+"productionLine"
+).value;
+
+const location =
+document.getElementById(
+"processLocation"
+).value;
+
+const operation =
+document.getElementById(
+"operationProcess"
+).value.trim();
+
+const parts =
+getSelectedParts();
+
+const ct =
+document.getElementById(
+"ctCycleTime"
+).value.trim();
 
 
-if(!assetNumber){
+/* Validation */
+
+if(!asset){
 
 alert(
 "⚠️ Asset Number is required."
@@ -1054,24 +1296,60 @@ return;
 
 }
 
-
-/* Selected Parts */
-
-const selectedParts =
-Array.from(
-document.querySelectorAll(
-"#partOptions .option input:checked"
-)
-)
-.map(
-checkbox => checkbox.value
-);
-
-
-if(selectedParts.length === 0){
+if(!shop){
 
 alert(
-"⚠️ Please select at least one Part Name."
+"⚠️ Please select Machine Shop."
+);
+
+return;
+
+}
+
+if(!line){
+
+alert(
+"⚠️ Please select Production Line."
+);
+
+return;
+
+}
+
+if(!location){
+
+alert(
+"⚠️ Please select Process Location."
+);
+
+return;
+
+}
+
+if(!operation){
+
+alert(
+"⚠️ Please enter Operation / Process."
+);
+
+return;
+
+}
+
+if(parts.length===0){
+
+alert(
+"⚠️ Please select at least one Part."
+);
+
+return;
+
+}
+
+if(!ct){
+
+alert(
+"⚠️ Please enter Cycle Time."
 );
 
 return;
@@ -1079,115 +1357,186 @@ return;
 }
 
 
-/* Data */
+/* Fill summary */
 
-const production = {
+document.getElementById(
+"rAsset"
+).innerText=asset;
+
+document.getElementById(
+"rShop"
+).innerText=shop;
+
+document.getElementById(
+"rLine"
+).innerText=line;
+
+document.getElementById(
+"rLocation"
+).innerText=
+"Process " + location;
+
+document.getElementById(
+"rOperation"
+).innerText=
+operation;
+
+document.getElementById(
+"rStatus"
+).innerText=
+document.getElementById(
+"machineStatus"
+).value;
+
+document.getElementById(
+"rCT"
+).innerText=ct;
+
+
+/* Parts */
+
+const partsBox =
+document.getElementById(
+"rParts"
+);
+
+partsBox.innerHTML="";
+
+parts.forEach(part=>{
+
+const span =
+document.createElement("span");
+
+span.className="partTag";
+
+span.innerText=part;
+
+partsBox.appendChild(span);
+
+});
+
+
+/* Remarks */
+
+const remarks =
+document.getElementById(
+"remarks"
+).value.trim();
+
+document.getElementById(
+"rRemarks"
+).innerText =
+remarks || "No remarks";
+
+
+/* Show review */
+
+document.getElementById(
+"entryCard"
+).style.display="none";
+
+document.getElementById(
+"reviewCard"
+).style.display="block";
+
+
+window.scrollTo({
+top:0,
+behavior:"smooth"
+});
+
+}
+
+
+/* ==================================================
+   EDIT
+================================================== */
+
+function editData(){
+
+document.getElementById(
+"reviewCard"
+).style.display="none";
+
+document.getElementById(
+"entryCard"
+).style.display="block";
+
+
+window.scrollTo({
+top:0,
+behavior:"smooth"
+});
+
+}
+
+
+/* ==================================================
+   CONFIRM SAVE
+================================================== */
+
+async function confirmSave(){
+
+const production={
 
 assetNumber:
-
-assetNumber,
-
+document.getElementById(
+"assetNumber"
+).value.trim(),
 
 machineShop:
-
-document
-.getElementById(
+document.getElementById(
 "machineShop"
-)
-.value,
-
+).value,
 
 productionLine:
-
-document
-.getElementById(
+document.getElementById(
 "productionLine"
-)
-.value,
-
-
-/*
-Machine Location has been
-replaced by Process Location
-*/
+).value,
 
 machineLocation:
-
-document
-.getElementById(
+document.getElementById(
 "processLocation"
-)
-.value,
-
-
-/*
-Multiple parts are saved
-as comma-separated values.
-*/
+).value,
 
 machineParts:
-
-selectedParts.join(", "),
-
+getSelectedParts().join(", "),
 
 operationProcess:
-
-document
-.getElementById(
+document.getElementById(
 "operationProcess"
-)
-.value,
-
-
-/*
-Part Number no longer used.
-*/
+).value.trim(),
 
 partNumber:"",
 
-
 partName:
-
-selectedParts.join(", "),
-
+getSelectedParts().join(", "),
 
 machineStatus:
-
-document
-.getElementById(
+document.getElementById(
 "machineStatus"
-)
-.value,
-
+).value,
 
 ctCycleTime:
-
-document
-.getElementById(
+document.getElementById(
 "ctCycleTime"
-)
-.value,
-
+).value.trim(),
 
 remarks:
-
-document
-.getElementById(
+document.getElementById(
 "remarks"
-)
-.value
+).value.trim()
 
 };
 
 
 document.getElementById(
 "msg"
-).innerHTML =
-"⏳ Saving data...";
+).innerHTML=
+"⏳ Saving...";
 
 
 try{
-
 
 const result =
 await api({
@@ -1208,24 +1557,40 @@ if(result.success){
 
 document.getElementById(
 "msg"
-).innerHTML =
-"✅ " +
-result.message;
+).innerHTML=
+"✅ " + result.message;
 
+
+/* Hide review */
+
+document.getElementById(
+"reviewCard"
+).style.display="none";
+
+document.getElementById(
+"entryCard"
+).style.display="block";
+
+
+/* Clear */
 
 clearForm();
+
+
+window.scrollTo({
+top:0,
+behavior:"smooth"
+});
 
 
 }else{
 
 document.getElementById(
 "msg"
-).innerHTML =
-"❌ " +
-result.message;
+).innerHTML=
+"❌ " + result.message;
 
 }
-
 
 }catch(error){
 
@@ -1233,7 +1598,7 @@ console.error(error);
 
 document.getElementById(
 "msg"
-).innerHTML =
+).innerHTML=
 "❌ Connection error. Please try again.";
 
 }
@@ -1241,32 +1606,23 @@ document.getElementById(
 }
 
 
-/* ==========================================
+/* ==================================================
    CLEAR FORM
-========================================== */
+================================================== */
 
 function clearForm(){
 
 document
 .querySelectorAll(
-"input, textarea"
+"#entryCard input, #entryCard textarea"
 )
 .forEach(
-element => {
-
-if(
-element.type !== "checkbox"
-){
+element=>{
 
 element.value="";
 
-}
+});
 
-}
-);
-
-
-/* Reset selects */
 
 document.getElementById(
 "machineShop"
@@ -1285,28 +1641,48 @@ document.getElementById(
 ).value="Running";
 
 
-/* Reset parts */
-
 document
 .querySelectorAll(
 "#partOptions .option input"
 )
 .forEach(
-checkbox => {
+checkbox=>{
 
 checkbox.checked=false;
 
-}
-);
+});
+
 
 document.getElementById(
 "selectAllParts"
 ).checked=false;
 
-
 updateSelectedParts();
 
 }
+
+
+/* ==================================================
+   ESCAPE HTML
+================================================== */
+
+function escapeHtml(value){
+
+return String(value || "")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+
+}
+
+
+/* ==================================================
+   START
+================================================== */
+
+createPartOptions();
 
 </script>
 
