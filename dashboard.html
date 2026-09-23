@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width,initial-scale=1">
+
+<title>Machine Dashboard</title>
+
+<style>
+
+*{box-sizing:border-box}
+
+body{
+margin:0;
+font-family:Arial;
+background:#f1f5f9;
+color:#0f172a
+}
+
+.header{
+background:
+linear-gradient(
+135deg,#0f172a,#1e40af
+);
+color:white;
+padding:22px;
+text-align:center
+}
+
+.container{
+max-width:1200px;
+margin:auto;
+padding:20px
+}
+
+.cards{
+display:grid;
+grid-template-columns:
+repeat(auto-fit,minmax(200px,1fr));
+gap:18px
+}
+
+.stat{
+background:white;
+padding:22px;
+border-radius:18px;
+box-shadow:0 7px 25px rgba(0,0,0,.07)
+}
+
+.statIcon{
+font-size:35px
+}
+
+.number{
+font-size:32px;
+font-weight:bold;
+margin-top:8px
+}
+
+.section{
+background:white;
+padding:22px;
+border-radius:18px;
+margin-top:20px;
+box-shadow:0 7px 25px rgba(0,0,0,.07)
+}
+
+table{
+width:100%;
+border-collapse:collapse
+}
+
+th,td{
+padding:10px;
+border-bottom:1px solid #e2e8f0;
+text-align:left
+}
+
+input,select{
+padding:10px;
+border:1px solid #cbd5e1;
+border-radius:8px;
+width:100%
+}
+
+button{
+border:0;
+padding:10px 15px;
+border-radius:8px;
+cursor:pointer;
+font-weight:bold
+}
+
+.save{
+background:#16a34a;
+color:white
+}
+
+.back{
+background:#64748b;
+color:white
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+
+<h1>📊 Machine Asset Dashboard</h1>
+
+<div id="user"></div>
+
+</div>
+
+<div class="container">
+
+<button class="back"
+onclick="location.href='home.html'">
+
+⬅️ Home
+
+</button>
+
+
+<div class="cards">
+
+<div class="stat">
+
+<div class="statIcon">🏭</div>
+
+<div>Total Machines</div>
+
+<div class="number"
+id="totalMachines">
+0
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="statIcon">🔩</div>
+
+<div>Child Assets</div>
+
+<div class="number"
+id="totalChildren">
+0
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="statIcon">🏗️</div>
+
+<div>Production Entries</div>
+
+<div class="number"
+id="productionEntries">
+0
+</div>
+
+</div>
+
+</div>
+
+
+<div class="section">
+
+<h2>📋 Recent Machines</h2>
+
+<div style="overflow:auto">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Asset</th>
+<th>Machine</th>
+<th>Brand</th>
+<th>Model</th>
+<th>Type</th>
+<th>Location</th>
+<th>Line</th>
+
+</tr>
+
+</thead>
+
+<tbody id="machines"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+
+<div class="section"
+id="usersSection"
+style="display:none">
+
+<h2>👥 User Management</h2>
+
+<p>
+Administrator یہاں users create/update کر سکتا ہے۔
+</p>
+
+<div style="
+display:grid;
+grid-template-columns:
+repeat(auto-fit,minmax(180px,1fr));
+gap:10px">
+
+<input id="uUsername"
+placeholder="Username">
+
+<input id="uPassword"
+placeholder="Password">
+
+<input id="uDisplay"
+placeholder="Display Name">
+
+<select id="uRole">
+
+<option>Viewer</option>
+<option>Production</option>
+<option>Maintenance</option>
+<option>Administrator</option>
+
+</select>
+
+</div>
+
+<br>
+
+<label>
+<input type="checkbox"
+id="uActive"
+checked>
+Active
+</label>
+
+<br>
+
+<label>
+<input type="checkbox"
+id="uProduction">
+Production Access
+</label>
+
+<br>
+
+<label>
+<input type="checkbox"
+id="uMaintenance">
+Maintenance Access
+</label>
+
+<br>
+
+<label>
+<input type="checkbox"
+id="uDashboard">
+Dashboard Access
+</label>
+
+<br><br>
+
+<button class="save"
+onclick="saveUser()">
+
+💾 Save User
+
+</button>
+
+<hr>
+
+<h3>Existing Users</h3>
+
+<div style="overflow:auto">
+
+<table>
+
+<thead>
+
+<tr>
+<th>Username</th>
+<th>Name</th>
+<th>Role</th>
+<th>Active</th>
+<th>Production</th>
+<th>Maintenance</th>
+<th>Dashboard</th>
+</tr>
+
+</thead>
+
+<tbody id="users"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+const API_URL =
+"YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL";
+
+const token =
+sessionStorage.getItem("machine_token");
+
+const user =
+JSON.parse(
+sessionStorage.getItem("machine_user") || "null"
+);
+
+if(!token || !user){
+
+location.href="index.html";
+
+}
+
+document.getElementById("user")
+.innerText =
+"👤 " +
+(user.displayName || user.username) +
+" • " +
+user.role;
+
+
+async function api(data){
+
+const response =
+await fetch(API_URL,{
+method:"POST",
+headers:{
+"Content-Type":
+"text/plain;charset=utf-8"
+},
+body:JSON.stringify(data)
+});
+
+return await response.json();
+
+}
+
+
+async function loadDashboard(){
+
+const result =
+await api({
+
+action:"getDashboard",
+
+token:token
+
+});
+
+if(!result.success){
+
+alert(result.message);
+
+return;
+
+}
+
+document.getElementById(
+"totalMachines"
+).innerText =
+result.stats.totalMachines;
+
+document.getElementById(
+"totalChildren"
+).innerText =
+result.stats.totalChildAssets;
+
+document.getElementById(
+"productionEntries"
+).innerText =
+result.stats.productionEntries;
+
+
+const tbody =
+document.getElementById("machines");
+
+tbody.innerHTML="";
+
+result.recentMachines.forEach(m=>{
+
+tbody.innerHTML += `
+
+<tr>
+
+<td>${esc(m.assetNumber)}</td>
+
+<td>${esc(m.machineName)}</td>
+
+<td>${esc(m.brand)}</td>
+
+<td>${esc(m.model)}</td>
+
+<td>${esc(m.type)}</td>
+
+<td>${esc(m.location)}</td>
+
+<td>${esc(m.line)}</td>
+
+</tr>
+
+`;
+
+});
+
+}
+
+
+async function loadUsers(){
+
+if(user.role!=="Administrator")
+return;
+
+document.getElementById(
+"usersSection"
+).style.display="block";
+
+const result =
+await api({
+
+action:"listUsers",
+
+token:token
+
+});
+
+if(!result.success){
+
+alert(result.message);
+
+return;
+
+}
+
+const tbody =
+document.getElementById("users");
+
+tbody.innerHTML="";
+
+result.users.forEach(u=>{
+
+tbody.innerHTML += `
+
+<tr>
+
+<td>${esc(u.username)}</td>
+
+<td>${esc(u.displayName)}</td>
+
+<td>${esc(u.role)}</td>
+
+<td>${u.active?"✅":"❌"}</td>
+
+<td>${u.production?"✅":"❌"}</td>
+
+<td>${u.maintenance?"✅":"❌"}</td>
+
+<td>${u.dashboard?"✅":"❌"}</td>
+
+</tr>
+
+`;
+
+});
+
+}
+
+
+async function saveUser(){
+
+const username =
+document.getElementById(
+"uUsername"
+).value.trim();
+
+const password =
+document.getElementById(
+"uPassword"
+).value;
+
+if(!username){
+
+alert("Username required.");
+
+return;
+
+}
+
+const result =
+await api({
+
+action:"saveUser",
+
+token:token,
+
+user:{
+
+username:username,
+
+password:password,
+
+displayName:
+document.getElementById(
+"uDisplay"
+).value,
+
+role:
+document.getElementById(
+"uRole"
+).value,
+
+active:
+document.getElementById(
+"uActive"
+).checked,
+
+production:
+document.getElementById(
+"uProduction"
+).checked,
+
+maintenance:
+document.getElementById(
+"uMaintenance"
+).checked,
+
+dashboard:
+document.getElementById(
+"uDashboard"
+).checked
+
+}
+
+});
+
+alert(result.message);
+
+if(result.success){
+
+loadUsers();
+
+}
+
+}
+
+
+function esc(v){
+
+return String(v||"")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+
+}
+
+
+loadDashboard();
+loadUsers();
+
+</script>
+
+</body>
+
+</html>
