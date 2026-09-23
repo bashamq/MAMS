@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width,initial-scale=1">
+
+<title>Maintenance Entry</title>
+
+<style>
+
+*{box-sizing:border-box}
+
+body{
+margin:0;
+font-family:Arial;
+background:#f8fafc;
+color:#0f172a
+}
+
+.header{
+background:
+linear-gradient(
+135deg,#111827,#0f766e
+);
+color:white;
+padding:20px;
+text-align:center
+}
+
+.container{
+max-width:1100px;
+margin:auto;
+padding:20px
+}
+
+.card{
+background:white;
+padding:22px;
+border-radius:18px;
+margin-bottom:20px;
+box-shadow:0 8px 25px rgba(0,0,0,.07)
+}
+
+.grid{
+display:grid;
+grid-template-columns:
+repeat(auto-fit,minmax(230px,1fr));
+gap:15px
+}
+
+label{
+font-weight:bold;
+display:block;
+margin-bottom:6px
+}
+
+input,select,textarea{
+width:100%;
+padding:12px;
+border:1px solid #cbd5e1;
+border-radius:9px
+}
+
+textarea{
+min-height:80px
+}
+
+.child{
+border:2px solid #dbeafe;
+background:#f8fbff;
+padding:18px;
+border-radius:15px;
+margin-top:15px;
+position:relative
+}
+
+.childTitle{
+font-weight:bold;
+font-size:18px;
+margin-bottom:15px
+}
+
+.remove{
+background:#ef4444;
+color:white;
+border:0;
+padding:8px 12px;
+border-radius:8px;
+position:absolute;
+right:15px;
+top:15px
+}
+
+.add{
+background:#2563eb;
+color:white;
+border:0;
+padding:13px 18px;
+border-radius:10px;
+margin-top:15px
+}
+
+.save{
+background:#16a34a;
+color:white;
+border:0;
+padding:15px;
+border-radius:10px;
+width:100%;
+font-size:17px;
+font-weight:bold
+}
+
+.back{
+background:#64748b;
+color:white;
+border:0;
+padding:10px 15px;
+border-radius:8px;
+margin-bottom:15px
+}
+
+.info{
+background:#eff6ff;
+padding:15px;
+border-radius:12px;
+margin-bottom:15px
+}
+
+#msg{
+text-align:center;
+font-weight:bold;
+margin:15px
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+
+<h1>🔧 Maintenance Technical Entry</h1>
+
+</div>
+
+<div class="container">
+
+<button class="back"
+onclick="location.href='home.html'">
+⬅️ Back
+</button>
+
+
+<div class="card">
+
+<h2>🔎 Find Machine</h2>
+
+<div class="grid">
+
+<div>
+
+<label>Asset Number *</label>
+
+<input id="searchAsset">
+
+</div>
+
+<div style="display:flex;align-items:end">
+
+<button class="add"
+onclick="loadMachine()">
+
+🔍 Load Machine
+
+</button>
+
+</div>
+
+</div>
+
+<div id="productionInfo"></div>
+
+</div>
+
+
+<div class="card">
+
+<h2>⚙️ Machine Technical Information</h2>
+
+<div class="grid">
+
+<div>
+<label>Machine Name</label>
+<input id="machineName">
+</div>
+
+<div>
+<label>Asset Number</label>
+<input id="assetNumber" readonly>
+</div>
+
+<div>
+<label>Machine Brand</label>
+<input id="machineBrand">
+</div>
+
+<div>
+<label>Machine Model</label>
+<input id="machineModel">
+</div>
+
+<div>
+<label>Machine Type *</label>
+
+<select id="machineType"
+onchange="updateChildTypes()">
+
+<option value="">Select Type</option>
+<option value="CNC">CNC</option>
+<option value="Conventional">Conventional</option>
+
+</select>
+
+</div>
+
+<div>
+<label>Manufacturer</label>
+<input id="manufacturer">
+</div>
+
+<div>
+<label>Year</label>
+<input id="year">
+</div>
+
+<div>
+<label>Controller</label>
+<input id="controller">
+</div>
+
+<div>
+<label>CNC Control</label>
+<input id="cncControl">
+</div>
+
+<div>
+<label>Power Rating</label>
+<input id="powerRating">
+</div>
+
+<div>
+<label>Voltage</label>
+<input id="voltage">
+</div>
+
+<div>
+<label>Phase</label>
+<input id="phase">
+</div>
+
+<div>
+<label>Serial Number</label>
+<input id="serialNumber">
+</div>
+
+<div>
+<label>Machine Function</label>
+<input id="machineFunction">
+</div>
+
+<div>
+<label>Installation Location</label>
+<input id="installationLocation">
+</div>
+
+<div>
+<label>Department / Production Line</label>
+<input id="departmentProductionLine">
+</div>
+
+</div>
+
+<label style="margin-top:15px">
+Remarks
+</label>
+
+<textarea id="machineRemarks"></textarea>
+
+</div>
+
+
+<div class="card">
+
+<h2>🔩 Child Assets</h2>
+
+<div class="info">
+
+ایک machine میں جتنے Child Assets ہوں
+سب کو <b>+ Add Child Asset</b> سے شامل کریں۔
+
+</div>
+
+<div id="children"></div>
+
+<button class="add"
+onclick="addChild()">
+
+➕ Add Child Asset
+
+</button>
+
+</div>
+
+
+<button class="save"
+onclick="saveMaintenance()">
+
+💾 Save Complete Machine Data
+
+</button>
+
+<div id="msg"></div>
+
+</div>
+
+
+<script>
+
+const API_URL =
+"YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL";
+
+const token =
+sessionStorage.getItem("machine_token");
+
+const user =
+JSON.parse(
+sessionStorage.getItem("machine_user") || "null"
+);
+
+if(!token || !user ||
+(!user.maintenance &&
+user.role!=="Administrator")){
+
+location.href="index.html";
+
+}
+
+
+async function api(data){
+
+const response =
+await fetch(API_URL,{
+method:"POST",
+headers:{
+"Content-Type":
+"text/plain;charset=utf-8"
+},
+body:JSON.stringify(data)
+});
+
+return await response.json();
+
+}
+
+
+/* =========================================
+   LOAD MACHINE
+========================================= */
+
+async function loadMachine(){
+
+const asset =
+document.getElementById(
+"searchAsset"
+).value.trim();
+
+if(!asset){
+
+alert("Enter Asset Number.");
+
+return;
+
+}
+
+document.getElementById("msg")
+.innerHTML="⏳ Loading machine...";
+
+try{
+
+const result =
+await api({
+
+action:"getMachine",
+
+token:token,
+
+assetNumber:asset
+
+});
+
+if(!result.success){
+
+document.getElementById("msg")
+.innerHTML=
+"❌ " + result.message;
+
+return;
+
+}
+
+
+document.getElementById(
+"assetNumber"
+).value=asset;
+
+
+/* Production information */
+
+let pHTML="";
+
+if(result.production.length){
+
+pHTML +=
+"<div class='info'><b>🏭 Production Information</b><br><br>";
+
+result.production.forEach(p=>{
+
+pHTML +=
+"Shop: "+(p.machineShop||"-")+
+" | Line: "+(p.productionLine||"-")+
+" | Location: "+(p.machineLocation||"-")+
+"<br>Part: "+(p.partName||"-")+
+" ("+(p.partNumber||"-")+")"+
+" | Operation: "+(p.operationProcess||"-")+
+" | CT: "+(p.ctCycleTime||"-")+
+"<br>";
+
+});
+
+pHTML+="</div>";
+
+}else{
+
+pHTML=
+"<div class='info'>⚠️ No Production data found for this Asset Number.</div>";
+
+}
+
+document.getElementById(
+"productionInfo"
+).innerHTML=pHTML;
+
+
+/* Machine */
+
+if(result.machine){
+
+const m=result.machine;
+
+setVal("machineName",m.machineName);
+setVal("machineBrand",m.machineBrand);
+setVal("machineModel",m.machineModel);
+setVal("machineType",m.machineType);
+setVal("manufacturer",m.manufacturer);
+setVal("year",m.year);
+setVal("controller",m.controller);
+setVal("cncControl",m.cncControl);
+setVal("powerRating",m.powerRating);
+setVal("voltage",m.voltage);
+setVal("phase",m.phase);
+setVal("serialNumber",m.serialNumber);
+setVal("machineFunction",m.machineFunction);
+setVal("installationLocation",m.installationLocation);
+setVal("departmentProductionLine",
+m.departmentProductionLine);
+setVal("machineRemarks",m.remarks);
+
+updateChildTypes();
+
+}
+
+
+/* Existing children */
+
+document.getElementById(
+"children"
+).innerHTML="";
+
+if(result.children &&
+result.children.length){
+
+result.children.forEach(c=>{
+addChild(c);
+});
+
+}
+
+document.getElementById("msg")
+.innerHTML="✅ Machine loaded.";
+
+}catch(e){
+
+document.getElementById("msg")
+.innerHTML=
+"❌ Connection error.";
+
+console.error(e);
+
+}
+
+}
+
+
+function setVal(id,value){
+
+document.getElementById(id).value =
+value || "";
+
+}
+
+
+/* =========================================
+   CHILD TYPES
+========================================= */
+
+function getTypes(){
+
+const type =
+document.getElementById(
+"machineType"
+).value;
+
+if(type==="CNC"){
+
+return [
+
+"Servo Drive",
+"Servo Motor",
+"Spindle Drive",
+"Spindle Motor",
+"PLC",
+"CNC Control",
+"Other"
+
+];
+
+}
+
+if(type==="Conventional"){
+
+return [
+
+"Spindle Motor",
+"Slide Motor",
+"Other Motor",
+"Other"
+
+];
+
+}
+
+return ["Other"];
+
+}
+
+
+/* =========================================
+   ADD CHILD
+========================================= */
+
+function addChild(data={}){
+
+const container =
+document.getElementById("children");
+
+const div =
+document.createElement("div");
+
+div.className="child";
+
+const types=getTypes();
+
+let options=
+'<option value="">Select Type</option>';
+
+types.forEach(t=>{
+
+options +=
+`<option value="${escapeHtml(t)}"
+${data.childAssetType===t?"selected":""}>
+${escapeHtml(t)}
+</option>`;
+
+});
+
+
+div.innerHTML=`
+
+<button class="remove"
+onclick="this.parentElement.remove()">
+✖
+</button>
+
+<div class="childTitle">
+🔩 Child Asset
+</div>
+
+<div class="grid">
+
+<div>
+<label>Child Asset Type</label>
+<select class="childType">
+${options}
+</select>
+</div>
+
+<div>
+<label>Child Asset Name</label>
+<input class="childName"
+value="${escapeAttr(data.childAssetName)}">
+</div>
+
+<div>
+<label>Axis</label>
+<input class="childAxis"
+value="${escapeAttr(data.axis)}"
+placeholder="X / Y / Z / N/A">
+</div>
+
+<div>
+<label>Brand</label>
+<input class="childBrand"
+value="${escapeAttr(data.brand)}">
+</div>
+
+<div>
+<label>Model</label>
+<input class="childModel"
+value="${escapeAttr(data.model)}">
+</div>
+
+<div>
+<label>Serial Number</label>
+<input class="childSerial"
+value="${escapeAttr(data.serialNumber)}">
+</div>
+
+<div>
+<label>Part Number</label>
+<input class="childPart"
+value="${escapeAttr(data.partNumber)}">
+</div>
+
+<div>
+<label>Location on Machine</label>
+<input class="childLocation"
+value="${escapeAttr(data.locationOnMachine)}">
+</div>
+
+<div>
+<label>Voltage</label>
+<input class="childVoltage"
+value="${escapeAttr(data.voltage)}">
+</div>
+
+<div>
+<label>Current</label>
+<input class="childCurrent"
+value="${escapeAttr(data.current)}">
+</div>
+
+<div>
+<label>Power</label>
+<input class="childPower"
+value="${escapeAttr(data.power)}">
+</div>
+
+<div>
+<label>Condition</label>
+
+<select class="childCondition">
+
+<option value="Working"
+${data.condition==="Working"?"selected":""}>
+Working
+</option>
+
+<option value="Under Repair"
+${data.condition==="Under Repair"?"selected":""}>
+Under Repair
+</option>
+
+<option value="Faulty"
+${data.condition==="Faulty"?"selected":""}>
+Faulty
+</option>
+
+<option value="Not Installed"
+${data.condition==="Not Installed"?"selected":""}>
+Not Installed
+</option>
+
+</select>
+
+</div>
+
+</div>
+
+<label>Function / What it does</label>
+
+<textarea class="childFunction">
+${escapeHtml(data.function||"")}
+</textarea>
+
+<label>Remarks</label>
+
+<textarea class="childRemarks">
+${escapeHtml(data.remarks||"")}
+</textarea>
+
+`;
+
+container.appendChild(div);
+
+}
+
+
+/* =========================================
+   MACHINE TYPE CHANGE
+========================================= */
+
+function updateChildTypes(){
+
+/*
+New child assets will use
+current machine type.
+Existing child assets are not removed.
+*/
+
+}
+
+
+/* =========================================
+   SAVE MAINTENANCE
+========================================= */
+
+async function saveMaintenance(){
+
+const asset =
+document.getElementById(
+"assetNumber"
+).value.trim();
+
+const machineType =
+document.getElementById(
+"machineType"
+).value;
+
+if(!asset){
+
+alert(
+"Please load Asset Number first."
+);
+
+return;
+
+}
+
+if(!machineType){
+
+alert(
+"Please select Machine Type."
+);
+
+return;
+
+}
+
+
+const machine={
+
+machineName:
+get("machineName"),
+
+assetNumber:asset,
+
+machineBrand:
+get("machineBrand"),
+
+machineModel:
+get("machineModel"),
+
+machineType:machineType,
+
+manufacturer:
+get("manufacturer"),
+
+year:get("year"),
+
+controller:get("controller"),
+
+cncControl:get("cncControl"),
+
+powerRating:get("powerRating"),
+
+voltage:get("voltage"),
+
+phase:get("phase"),
+
+serialNumber:get("serialNumber"),
+
+machineFunction:
+get("machineFunction"),
+
+installationLocation:
+get("installationLocation"),
+
+departmentProductionLine:
+get("departmentProductionLine"),
+
+remarks:get("machineRemarks")
+
+};
+
+
+const children=[];
+
+document
+.querySelectorAll(".child")
+.forEach(div=>{
+
+children.push({
+
+childAssetType:
+div.querySelector(
+".childType"
+).value,
+
+childAssetName:
+div.querySelector(
+".childName"
+).value,
+
+axis:
+div.querySelector(
+".childAxis"
+).value,
+
+brand:
+div.querySelector(
+".childBrand"
+).value,
+
+model:
+div.querySelector(
+".childModel"
+).value,
+
+serialNumber:
+div.querySelector(
+".childSerial"
+).value,
+
+partNumber:
+div.querySelector(
+".childPart"
+).value,
+
+locationOnMachine:
+div.querySelector(
+".childLocation"
+).value,
+
+voltage:
+div.querySelector(
+".childVoltage"
+).value,
+
+current:
+div.querySelector(
+".childCurrent"
+).value,
+
+power:
+div.querySelector(
+".childPower"
+).value,
+
+function:
+div.querySelector(
+".childFunction"
+).value,
+
+condition:
+div.querySelector(
+".childCondition"
+).value,
+
+remarks:
+div.querySelector(
+".childRemarks"
+).value
+
+});
+
+});
+
+
+document.getElementById("msg")
+.innerHTML="⏳ Saving...";
+
+
+try{
+
+const result =
+await api({
+
+action:"saveMaintenance",
+
+token:token,
+
+machine:machine,
+
+children:children
+
+});
+
+
+if(result.success){
+
+document.getElementById("msg")
+.innerHTML=
+"✅ " + result.message +
+" | Child Assets: " +
+result.childCount;
+
+}else{
+
+document.getElementById("msg")
+.innerHTML=
+"❌ " + result.message;
+
+}
+
+}catch(e){
+
+document.getElementById("msg")
+.innerHTML=
+"❌ Connection error.";
+
+}
+
+}
+
+
+function get(id){
+
+return document
+.getElementById(id)
+.value;
+
+}
+
+
+function escapeHtml(value){
+
+return String(value||"")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+
+}
+
+
+function escapeAttr(value){
+
+return escapeHtml(value);
+
+}
+
+</script>
+
+</body>
+</html>
