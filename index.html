@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Machine Asset Management</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+margin:0;
+font-family:Arial,sans-serif;
+background:linear-gradient(135deg,#0f172a,#1e3a8a,#0f766e);
+min-height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:20px;
+color:#fff
+}
+
+.card{
+width:100%;
+max-width:440px;
+background:rgba(255,255,255,.12);
+backdrop-filter:blur(18px);
+border:1px solid rgba(255,255,255,.2);
+border-radius:25px;
+padding:30px;
+box-shadow:0 20px 60px rgba(0,0,0,.3)
+}
+
+.logo{
+text-align:center;
+font-size:55px;
+margin-bottom:5px
+}
+
+h1{
+text-align:center;
+margin:5px 0;
+font-size:26px
+}
+
+.subtitle{
+text-align:center;
+opacity:.8;
+margin-bottom:25px
+}
+
+label{
+display:block;
+margin-top:15px;
+margin-bottom:7px;
+font-weight:bold
+}
+
+input{
+width:100%;
+padding:14px;
+border:0;
+border-radius:12px;
+font-size:16px;
+outline:none
+}
+
+button{
+width:100%;
+padding:14px;
+margin-top:20px;
+border:0;
+border-radius:12px;
+font-size:16px;
+font-weight:bold;
+cursor:pointer;
+background:#22c55e;
+color:#052e16
+}
+
+button:hover{
+opacity:.9
+}
+
+#msg{
+margin-top:15px;
+text-align:center;
+font-weight:bold
+}
+
+.footer{
+text-align:center;
+margin-top:25px;
+font-size:12px;
+opacity:.7
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<div class="logo">🏭</div>
+
+<h1>Machine Asset Management</h1>
+
+<div class="subtitle">
+Production • Maintenance • Assets
+</div>
+
+<label>👤 Username</label>
+<input id="username" autocomplete="username">
+
+<label>🔐 Password</label>
+<input id="password" type="password" autocomplete="current-password">
+
+<button onclick="login()">🚀 Login</button>
+
+<div id="msg"></div>
+
+<div class="footer">
+Industrial Machine Asset System
+</div>
+
+</div>
+
+<script>
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbxop4TOck0v3KRllP6qJpNOLqpxyKAzw5YG43IP-lZEVHy_MChTn12RAdFfC_J9qysLsA/exec";
+
+
+async function api(data){
+
+const response =
+await fetch(API_URL,{
+method:"POST",
+headers:{
+"Content-Type":"text/plain;charset=utf-8"
+},
+body:JSON.stringify(data)
+});
+
+return await response.json();
+}
+
+
+async function login(){
+
+const username =
+document.getElementById("username").value.trim();
+
+const password =
+document.getElementById("password").value;
+
+const msg =
+document.getElementById("msg");
+
+if(!username || !password){
+
+msg.innerHTML =
+"⚠️ Username and Password required.";
+
+return;
+}
+
+msg.innerHTML =
+"⏳ Logging in...";
+
+try{
+
+const result =
+await api({
+action:"login",
+username:username,
+password:password
+});
+
+if(!result.success){
+
+msg.innerHTML =
+"❌ " + result.message;
+
+return;
+}
+
+sessionStorage.setItem(
+"machine_token",
+result.token
+);
+
+sessionStorage.setItem(
+"machine_user",
+JSON.stringify(result.user)
+);
+
+window.location.href =
+"home.html";
+
+}catch(error){
+
+msg.innerHTML =
+"❌ Connection error.";
+
+console.error(error);
+}
+
+}
+
+document
+.getElementById("password")
+.addEventListener(
+"keypress",
+function(e){
+
+if(e.key==="Enter"){
+login();
+}
+
+});
+
+</script>
+
+</body>
+</html>
