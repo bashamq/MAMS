@@ -333,7 +333,7 @@ onclick="saveMaintenance()">
 <script>
 
 const API_URL =
-"YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL";
+"https://script.google.com/macros/s/AKfycbxop4TOck0v3KRllP6qJpNOLqpxyKAzw5YG43IP-lZEVHy_MChTn12RAdFfC_J9qysLsA/exec";
 
 const token =
 sessionStorage.getItem("machine_token");
@@ -354,6 +354,10 @@ location.href="index.html";
 
 async function api(data){
 
+if(!API_URL || API_URL.includes("YOUR_GOOGLE")){
+throw new Error("Google Apps Script API URL is not configured.");
+}
+
 const response =
 await fetch(API_URL,{
 method:"POST",
@@ -361,10 +365,23 @@ headers:{
 "Content-Type":
 "text/plain;charset=utf-8"
 },
-body:JSON.stringify(data)
+body:JSON.stringify(data),
+redirect:"follow"
 });
 
-return await response.json();
+if(!response.ok){
+throw new Error("HTTP Error: " + response.status);
+}
+
+const text = await response.text();
+
+console.log("API Raw Response:", text);
+
+try{
+return JSON.parse(text);
+}catch(error){
+throw new Error("Invalid JSON response: " + text);
+}
 
 }
 
@@ -386,6 +403,14 @@ alert("Enter Asset Number.");
 
 return;
 
+}
+
+const loadBtn =
+document.querySelector('button[onclick="loadMachine()"]');
+
+if(loadBtn){
+loadBtn.disabled=true;
+loadBtn.innerText="⏳ Loading...";
 }
 
 document.getElementById("msg")
@@ -506,11 +531,18 @@ document.getElementById("msg")
 
 }catch(e){
 
+console.error("Load Machine Error:",e);
+
 document.getElementById("msg")
 .innerHTML=
-"❌ Connection error.";
+"❌ Connection error: " + (e.message || "Unable to connect to Google Apps Script.");
 
-console.error(e);
+}finally{
+
+if(loadBtn){
+loadBtn.disabled=false;
+loadBtn.innerText="🔍 Load Machine";
+}
 
 }
 
@@ -950,9 +982,11 @@ document.getElementById("msg")
 
 }catch(e){
 
+console.error("Save Maintenance Error:",e);
+
 document.getElementById("msg")
 .innerHTML=
-"❌ Connection error.";
+"❌ Connection error: " + (e.message || "Unable to connect to Google Apps Script.");
 
 }
 
