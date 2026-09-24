@@ -1173,80 +1173,65 @@ async function api(data){
     try{
 
         const response = await fetch(API_URL, {
-            method:"POST",
-            headers:{
-                "Content-Type":"text/plain;charset=utf-8"
+            method: "POST",
+            headers: {
+                "Content-Type": "text/plain;charset=utf-8"
             },
-            body:JSON.stringify(data),
-            redirect:"follow"
+            body: JSON.stringify(data),
+            redirect: "follow"
         });
 
-        const responseText = await response.text();
+        const text = await response.text();
 
         console.log("HTTP Status:", response.status);
-        console.log("API Response:", responseText);
+        console.log("Final URL:", response.url);
+        console.log("Raw API Response:", text);
 
-        /*
-         * Read the response body before checking HTTP status.
-         * This gives us the actual Google Apps Script message
-         * instead of showing only a generic 404/HTTP error.
-         */
-
-        if(!responseText){
+        if(!text || !text.trim()){
 
             throw new Error(
-                "Empty response from Google Apps Script. HTTP Status: " +
-                response.status
+                "Google Apps Script returned an empty response."
             );
 
         }
 
+        // JSON response تلاش کریں
         let result;
 
-        try{
+        try {
 
-            result = JSON.parse(responseText);
+            result = JSON.parse(text.trim());
 
-        }catch(parseError){
+        } catch(e) {
 
-            console.error(
-                "Invalid JSON response:",
-                responseText
-            );
+            console.error("RAW RESPONSE:", text);
+
+            // اگر response میں HTML/error page ہے
+            if(text.toLowerCase().includes("<html") ||
+               text.toLowerCase().includes("<!doctype")){
+
+                throw new Error(
+                    "Google Apps Script returned an HTML page instead of JSON. " +
+                    "Check Apps Script deployment/access settings."
+                );
+
+            }
 
             throw new Error(
-                "Invalid API response: " +
-                responseText.substring(0,300)
+                "Invalid API response:\n\n" +
+                text.substring(0, 500)
             );
 
         }
 
-        /*
-         * Backend returned a valid application-level error.
-         */
-        if(result && result.success === false){
+        console.log("Parsed API Result:", result);
+
+        // Backend error
+        if(result.success === false){
 
             throw new Error(
                 result.message ||
-                "API request failed."
-            );
-
-        }
-
-        /*
-         * If the response is not OK and the backend did not
-         * provide a successful response, report the HTTP error.
-         */
-        if(!response.ok && (!result || result.success !== true)){
-
-            throw new Error(
-                "HTTP Error: " +
-                response.status +
-                (
-                    result && result.message
-                    ? " - " + result.message
-                    : ""
-                )
+                "Google Apps Script returned an error."
             );
 
         }
@@ -1255,10 +1240,7 @@ async function api(data){
 
     }catch(error){
 
-        console.error(
-            "API ERROR:",
-            error
-        );
+        console.error("API ERROR:", error);
 
         throw error;
 
