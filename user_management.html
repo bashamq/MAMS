@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MAMS | User Management</title>
+<style>
+*{box-sizing:border-box}
+:root{--navy:#0b1220;--blue:#2563eb;--teal:#0f766e;--green:#16a34a;--red:#dc2626;--amber:#d97706;--bg:#f4f7fb;--line:#e2e8f0;--text:#0f172a;--muted:#64748b}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at top,#eef5ff,#f7fafc 48%,#eef2f7);color:var(--text);min-height:100vh}
+.header{background:linear-gradient(135deg,var(--navy),#123b7a 55%,var(--teal));color:#fff;padding:25px 18px;text-align:center;box-shadow:0 8px 25px #0f172a22}
+.header h1{margin:0;font-size:28px}.header p{margin:7px 0 0;opacity:.85}
+.container{max-width:1100px;margin:auto;padding:20px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+button{border:0;border-radius:11px;padding:12px 17px;min-height:44px;font-weight:700;cursor:pointer}
+.back{background:#64748b;color:#fff}.save{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;width:100%}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:20px;padding:22px;box-shadow:0 12px 35px #0f172a12;margin-bottom:18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+label{display:block;font-weight:700;margin-bottom:7px}input,select{width:100%;padding:13px;border:1px solid #cbd5e1;border-radius:10px;min-height:45px;font-size:15px}input:focus,select:focus{outline:0;border-color:#2563eb;box-shadow:0 0 0 4px #2563eb18}
+.permission{display:flex;flex-wrap:wrap;gap:10px;margin:17px 0}.perm{flex:1 1 180px;background:#f8fafc;border:1px solid #e2e8f0;padding:13px;border-radius:12px;display:flex;align-items:center;gap:9px}.perm input{width:auto;min-height:auto}
+.tableWrap{overflow:auto}table{width:100%;min-width:760px;border-collapse:collapse}th,td{padding:12px;border-bottom:1px solid #e2e8f0;text-align:left;white-space:nowrap}th{background:#f8fafc;color:#334155}
+.badge{padding:5px 9px;border-radius:20px;font-weight:700;font-size:12px}.yes{background:#dcfce7;color:#166534}.no{background:#fee2e2;color:#991b1b}
+.note{color:var(--muted);font-size:14px}.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);opacity:0;pointer-events:none;z-index:9999;background:#0f172a;color:#fff;padding:14px 20px;border-radius:14px;font-weight:700;transition:.25s;box-shadow:0 12px 35px #0004}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:600px){.container{padding:12px}.header h1{font-size:23px}.card{padding:16px;border-radius:16px}.topbar button{width:100%}}
+</style>
+</head>
+<body>
+<div class="header">
+<h1>👥 User Management</h1>
+<p>Machine Asset Management System • Administrator</p>
+</div>
+<div class="container">
+<div class="topbar">
+<button class="back" onclick="location.href='home.html'">⬅️ Back to Home</button>
+<div id="userInfo" class="note"></div>
+</div>
+
+<div class="card">
+<h2>➕ Create / Update User</h2>
+<p class="note">Use the same username to update an existing user. Leave Password empty when updating if you do not want to change it.</p>
+<div class="grid">
+<div><label>Username *</label><input id="uUsername" autocomplete="off" placeholder="e.g. production01"></div>
+<div><label>Password</label><input id="uPassword" type="password" autocomplete="new-password" placeholder="Password"></div>
+<div><label>Display Name</label><input id="uDisplay" placeholder="Employee Name"></div>
+<div><label>Role</label>
+<select id="uRole">
+<option value="Viewer">Viewer</option><option value="Production">Production</option>
+<option value="Maintenance">Maintenance</option><option value="Administrator">Administrator</option>
+</select></div>
+</div>
+<div class="permission">
+<label class="perm"><input type="checkbox" id="uActive" checked> Active User</label>
+<label class="perm"><input type="checkbox" id="uProduction"> Production Access</label>
+<label class="perm"><input type="checkbox" id="uMaintenance"> Maintenance Access</label>
+<label class="perm"><input type="checkbox" id="uDashboard"> Dashboard Access</label>
+</div>
+<button class="save" id="saveBtn" onclick="saveUser()">💾 Save User</button>
+</div>
+
+<div class="card">
+<h2>📋 Existing Users</h2>
+<div class="tableWrap">
+<table>
+<thead><tr><th>Username</th><th>Name</th><th>Role</th><th>Active</th><th>Production</th><th>Maintenance</th><th>Dashboard</th></tr></thead>
+<tbody id="users"><tr><td colspan="7">Loading...</td></tr></tbody>
+</table>
+</div>
+</div>
+</div>
+<script>
+const API_URL="https://script.google.com/macros/s/AKfycbxop4TOck0v3KRllP6qJpNOLqpxyKAzw5YG43IP-lZEVHy_MChTn12RAdFfC_J9qysLsA/exec";
+const token=sessionStorage.getItem("machine_token");
+const user=JSON.parse(sessionStorage.getItem("machine_user")||"null");
+if(!token||!user||user.role!=="Administrator") location.href="home.html";
+document.getElementById("userInfo").textContent="👤 "+(user.displayName||user.username)+" • Administrator";
+
+async function api(data){
+const response=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(data),redirect:"follow"});
+const text=await response.text();
+if(!text.trim()) throw new Error("Empty response from Google Apps Script.");
+let result; try{result=JSON.parse(text.trim())}catch(e){throw new Error("Invalid API response: "+text.substring(0,250))}
+if(result.success===false) throw new Error(result.message||"Request failed.");
+return result;
+}
+function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function toast(msg){let t=document.getElementById("toast");if(!t){t=document.createElement("div");t.id="toast";t.className="toast";document.body.appendChild(t)}t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1400)}
+async function loadUsers(){
+const result=await api({action:"listUsers",token});
+const tbody=document.getElementById("users");tbody.innerHTML="";
+(result.users||[]).forEach(u=>{
+const tr=document.createElement("tr");
+const badge=(v)=>v?'<span class="badge yes">YES</span>':'<span class="badge no">NO</span>';
+tr.innerHTML=`<td>${esc(u.username)}</td><td>${esc(u.displayName)}</td><td>${esc(u.role)}</td><td>${badge(u.active)}</td><td>${badge(u.production)}</td><td>${badge(u.maintenance)}</td><td>${badge(u.dashboard)}</td>`;
+tbody.appendChild(tr);
+});
+if(!(result.users||[]).length) tbody.innerHTML='<tr><td colspan="7">No users found.</td></tr>';
+}
+async function saveUser(){
+const username=document.getElementById("uUsername").value.trim();
+if(!username){alert("Username is required.");return}
+const btn=document.getElementById("saveBtn");btn.disabled=true;btn.textContent="⏳ Saving...";
+try{
+const result=await api({action:"saveUser",token,user:{
+username,password:document.getElementById("uPassword").value,displayName:document.getElementById("uDisplay").value.trim(),
+role:document.getElementById("uRole").value,active:document.getElementById("uActive").checked,
+production:document.getElementById("uProduction").checked,maintenance:document.getElementById("uMaintenance").checked,dashboard:document.getElementById("uDashboard").checked}});
+if(result.success){toast("✅ User saved successfully.");clearForm();await loadUsers()}
+}catch(e){alert(e.message||"Unable to save user.")}finally{btn.disabled=false;btn.textContent="💾 Save User"}
+}
+function clearForm(){["uUsername","uPassword","uDisplay"].forEach(id=>document.getElementById(id).value="");document.getElementById("uRole").value="Viewer";document.getElementById("uActive").checked=true;["uProduction","uMaintenance","uDashboard"].forEach(id=>document.getElementById(id).checked=false)}
+loadUsers().catch(e=>{document.getElementById("users").innerHTML='<tr><td colspan="7">❌ '+esc(e.message)+'</td></tr>'});
+</script>
+</body>
+</html>
