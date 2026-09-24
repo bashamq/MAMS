@@ -1168,59 +1168,103 @@ let currentMachineLoaded = false;
 
 async function api(data){
 
-const response =
-await fetch(
-API_URL,
-{
-method:"POST",
+    console.log("API Request:", data);
 
-headers:{
-"Content-Type":
-"text/plain;charset=utf-8"
-},
+    try{
 
-body:JSON.stringify(data),
+        const response = await fetch(API_URL, {
+            method:"POST",
+            headers:{
+                "Content-Type":"text/plain;charset=utf-8"
+            },
+            body:JSON.stringify(data),
+            redirect:"follow"
+        });
 
-redirect:"follow"
+        const responseText = await response.text();
+
+        console.log("HTTP Status:", response.status);
+        console.log("API Response:", responseText);
+
+        /*
+         * Read the response body before checking HTTP status.
+         * This gives us the actual Google Apps Script message
+         * instead of showing only a generic 404/HTTP error.
+         */
+
+        if(!responseText){
+
+            throw new Error(
+                "Empty response from Google Apps Script. HTTP Status: " +
+                response.status
+            );
+
+        }
+
+        let result;
+
+        try{
+
+            result = JSON.parse(responseText);
+
+        }catch(parseError){
+
+            console.error(
+                "Invalid JSON response:",
+                responseText
+            );
+
+            throw new Error(
+                "Invalid API response: " +
+                responseText.substring(0,300)
+            );
+
+        }
+
+        /*
+         * Backend returned a valid application-level error.
+         */
+        if(result && result.success === false){
+
+            throw new Error(
+                result.message ||
+                "API request failed."
+            );
+
+        }
+
+        /*
+         * If the response is not OK and the backend did not
+         * provide a successful response, report the HTTP error.
+         */
+        if(!response.ok && (!result || result.success !== true)){
+
+            throw new Error(
+                "HTTP Error: " +
+                response.status +
+                (
+                    result && result.message
+                    ? " - " + result.message
+                    : ""
+                )
+            );
+
+        }
+
+        return result;
+
+    }catch(error){
+
+        console.error(
+            "API ERROR:",
+            error
+        );
+
+        throw error;
+
+    }
 
 }
-);
-
-
-if(!response.ok){
-
-throw new Error(
-"HTTP Error: " +
-response.status
-);
-
-}
-
-
-const text =
-await response.text();
-
-
-console.log(
-"API Response:",
-text
-);
-
-
-try{
-
-return JSON.parse(text);
-
-}catch(error){
-
-throw new Error(
-"Invalid API response"
-);
-
-}
-
-}
-
 
 /* ==================================================
    LOAD MACHINE
