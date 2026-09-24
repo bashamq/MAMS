@@ -275,6 +275,29 @@ input,select{
         flex:1;
     }
 }
+
+/* ===== MAMS PROFESSIONAL THEME ===== */
+:root{--navy:#0b1220;--blue:#2563eb;--teal:#0f766e;--green:#16a34a;--amber:#d97706;--red:#dc2626;--bg:#f4f7fb;--line:#e2e8f0;--text:#0f172a;--muted:#64748b}
+body{background:radial-gradient(circle at top,#eef5ff 0,#f7fafc 48%,#eef2f7 100%);color:var(--text)}
+.header{background:linear-gradient(135deg,var(--navy),#123b7a 55%,var(--teal));position:relative;overflow:hidden}
+.header:after{content:"";position:absolute;width:280px;height:280px;border-radius:50%;right:-110px;top:-160px;background:rgba(255,255,255,.08)}
+.card,.section,.stat{border:1px solid rgba(148,163,184,.22);box-shadow:0 12px 35px rgba(15,23,42,.08);transition:.2s}
+.card:hover,.section:hover{box-shadow:0 16px 42px rgba(15,23,42,.11)}
+input,select,textarea{min-height:44px;transition:.2s}
+input:focus,select:focus,textarea:focus{border-color:#2563eb!important;box-shadow:0 0 0 4px rgba(37,99,235,.10)!important}
+button{min-height:44px}
+.save,.confirmBtn,.confirmReview{background:linear-gradient(135deg,#16a34a,#15803d)!important}
+.reviewHeader{background:linear-gradient(135deg,#0f172a,#0f766e)!important}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);opacity:0;z-index:9999;pointer-events:none;padding:14px 20px;border-radius:14px;background:#0f172a;color:#fff;box-shadow:0 12px 35px rgba(0,0,0,.25);font-weight:700;transition:.25s}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:600px){.container{padding:12px!important}.header{padding:20px 14px!important}.header h1{font-size:22px!important}.card,.section{padding:16px!important}button{min-height:46px}}
+
+
+/* Dashboard UX */
+.stat{position:relative;overflow:hidden}
+.stat:before{content:"";position:absolute;right:-30px;top:-30px;width:90px;height:90px;border-radius:50%;background:rgba(37,99,235,.06)}
+.summaryCard{min-height:180px}
+
 </style>
 </head>
 
@@ -404,81 +427,6 @@ input,select{
             </table>
         </div>
     </div>
-
-    <!-- USER MANAGEMENT -->
-    <div class="section" id="usersSection" style="display:none">
-
-        <h2>👥 User Management</h2>
-
-        <p style="color:#64748b">
-            Administrator can create or update users and permissions.
-        </p>
-
-        <div class="formGrid">
-
-            <input id="uUsername" placeholder="Username">
-
-            <input id="uPassword" type="password" placeholder="Password">
-
-            <input id="uDisplay" placeholder="Display Name">
-
-            <select id="uRole">
-                <option value="Viewer">Viewer</option>
-                <option value="Production">Production</option>
-                <option value="Maintenance">Maintenance</option>
-                <option value="Administrator">Administrator</option>
-            </select>
-
-        </div>
-
-        <div class="checkbox">
-            <input type="checkbox" id="uActive" checked>
-            <label for="uActive">Active</label>
-        </div>
-
-        <div class="checkbox">
-            <input type="checkbox" id="uProduction">
-            <label for="uProduction">Production Access</label>
-        </div>
-
-        <div class="checkbox">
-            <input type="checkbox" id="uMaintenance">
-            <label for="uMaintenance">Maintenance Access</label>
-        </div>
-
-        <div class="checkbox">
-            <input type="checkbox" id="uDashboard">
-            <label for="uDashboard">Dashboard Access</label>
-        </div>
-
-        <button class="save" onclick="saveUser()">
-            💾 Save User
-        </button>
-
-        <hr>
-
-        <h3>Existing Users</h3>
-
-        <div class="tableWrap">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Username</th>
-                        <th>Name</th>
-                        <th>Role</th>
-                        <th>Active</th>
-                        <th>Production</th>
-                        <th>Maintenance</th>
-                        <th>Dashboard</th>
-                    </tr>
-                </thead>
-
-                <tbody id="users"></tbody>
-            </table>
-        </div>
-
-    </div>
-
 </div>
 
 <script>
@@ -810,234 +758,6 @@ function renderRecentMachines(list){
 
 
 /* =========================
-   USER MANAGEMENT
-========================= */
-
-async function loadUsers(){
-
-    if(user.role !== "Administrator")
-        return;
-
-
-    document.getElementById(
-        "usersSection"
-    ).style.display="block";
-
-
-    try{
-
-        const result =
-        await api({
-
-            action:"listUsers",
-
-            token:token
-
-        });
-
-
-        if(!result.success){
-
-            throw new Error(
-                result.message ||
-                "Unable to load users."
-            );
-
-        }
-
-
-        const tbody =
-        document.getElementById("users");
-
-        tbody.innerHTML="";
-
-
-        (result.users || []).forEach(u=>{
-
-            const row =
-            document.createElement("tr");
-
-
-            row.innerHTML = `
-
-                <td>${esc(u.username)}</td>
-
-                <td>${esc(u.displayName)}</td>
-
-                <td>${esc(u.role)}</td>
-
-                <td>${u.active ? "✅" : "❌"}</td>
-
-                <td>${u.production ? "✅" : "❌"}</td>
-
-                <td>${u.maintenance ? "✅" : "❌"}</td>
-
-                <td>${u.dashboard ? "✅" : "❌"}</td>
-
-            `;
-
-            tbody.appendChild(row);
-
-        });
-
-
-    }catch(error){
-
-        console.error(
-            "User loading error:",
-            error
-        );
-
-    }
-
-}
-
-
-/* =========================
-   SAVE USER
-========================= */
-
-async function saveUser(){
-
-    try{
-
-        const username =
-        document.getElementById(
-            "uUsername"
-        ).value.trim();
-
-
-        const password =
-        document.getElementById(
-            "uPassword"
-        ).value;
-
-
-        if(!username){
-
-            alert("Username required.");
-
-            return;
-
-        }
-
-
-        const result =
-        await api({
-
-            action:"saveUser",
-
-            token:token,
-
-            user:{
-
-                username:username,
-
-                password:password,
-
-                displayName:
-                document.getElementById(
-                    "uDisplay"
-                ).value.trim(),
-
-                role:
-                document.getElementById(
-                    "uRole"
-                ).value,
-
-                active:
-                document.getElementById(
-                    "uActive"
-                ).checked,
-
-                production:
-                document.getElementById(
-                    "uProduction"
-                ).checked,
-
-                maintenance:
-                document.getElementById(
-                    "uMaintenance"
-                ).checked,
-
-                dashboard:
-                document.getElementById(
-                    "uDashboard"
-                ).checked
-
-            }
-
-        });
-
-
-        alert(
-            result.message ||
-            "User saved successfully."
-        );
-
-
-        if(result.success){
-
-            clearUserForm();
-
-            await loadUsers();
-
-        }
-
-    }catch(error){
-
-        alert(
-            error.message ||
-            "Unable to save user."
-        );
-
-    }
-
-}
-
-
-/* =========================
-   CLEAR USER FORM
-========================= */
-
-function clearUserForm(){
-
-    document.getElementById(
-        "uUsername"
-    ).value="";
-
-    document.getElementById(
-        "uPassword"
-    ).value="";
-
-    document.getElementById(
-        "uDisplay"
-    ).value="";
-
-    document.getElementById(
-        "uRole"
-    ).value="Viewer";
-
-    document.getElementById(
-        "uActive"
-    ).checked=true;
-
-    document.getElementById(
-        "uProduction"
-    ).checked=false;
-
-    document.getElementById(
-        "uMaintenance"
-    ).checked=false;
-
-    document.getElementById(
-        "uDashboard"
-    ).checked=false;
-
-}
-
-
-/* =========================
    HELPERS
 ========================= */
 
@@ -1213,8 +933,6 @@ function hideMessages(){
 async function loadAll(){
 
     await loadDashboard();
-
-    await loadUsers();
 
 }
 
