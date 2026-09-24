@@ -1,592 +1,1229 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
-
-<meta name="viewport"
-content="width=device-width,initial-scale=1">
-
-<title>Machine Dashboard</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MAMS - Machine Asset Dashboard</title>
 
 <style>
-
 *{box-sizing:border-box}
 
 body{
-margin:0;
-font-family:Arial;
-background:#f1f5f9;
-color:#0f172a
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f1f5f9;
+    color:#0f172a;
 }
 
 .header{
-background:
-linear-gradient(
-135deg,#0f172a,#1e40af
-);
-color:white;
-padding:22px;
-text-align:center
+    background:linear-gradient(135deg,#0f172a,#1e40af);
+    color:#fff;
+    padding:22px 20px;
+    text-align:center;
+    position:relative;
+}
+
+.header h1{
+    margin:0 0 8px;
+    font-size:clamp(24px,4vw,34px);
+}
+
+.headerUser{
+    font-size:14px;
+    opacity:.9;
 }
 
 .container{
-max-width:1200px;
-margin:auto;
-padding:20px
+    max-width:1250px;
+    margin:auto;
+    padding:20px;
 }
 
-.cards{
-display:grid;
-grid-template-columns:
-repeat(auto-fit,minmax(200px,1fr));
-gap:18px
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:18px;
 }
 
-.stat{
-background:white;
-padding:22px;
-border-radius:18px;
-box-shadow:0 7px 25px rgba(0,0,0,.07)
-}
-
-.statIcon{
-font-size:35px
-}
-
-.number{
-font-size:32px;
-font-weight:bold;
-margin-top:8px
-}
-
-.section{
-background:white;
-padding:22px;
-border-radius:18px;
-margin-top:20px;
-box-shadow:0 7px 25px rgba(0,0,0,.07)
-}
-
-table{
-width:100%;
-border-collapse:collapse
-}
-
-th,td{
-padding:10px;
-border-bottom:1px solid #e2e8f0;
-text-align:left
-}
-
-input,select{
-padding:10px;
-border:1px solid #cbd5e1;
-border-radius:8px;
-width:100%
+.actions{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
 }
 
 button{
-border:0;
-padding:10px 15px;
-border-radius:8px;
-cursor:pointer;
-font-weight:bold
+    border:0;
+    padding:11px 16px;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:bold;
+    transition:.2s;
 }
 
-.save{
-background:#16a34a;
-color:white
+button:hover{
+    transform:translateY(-1px);
+    opacity:.95;
 }
 
 .back{
-background:#64748b;
-color:white
+    background:#64748b;
+    color:white;
 }
 
-</style>
+.refresh{
+    background:#2563eb;
+    color:white;
+}
 
+.save{
+    background:#16a34a;
+    color:white;
+}
+
+.danger{
+    background:#dc2626;
+    color:white;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+    gap:18px;
+}
+
+.stat{
+    background:white;
+    padding:22px;
+    border-radius:18px;
+    box-shadow:0 7px 25px rgba(0,0,0,.07);
+    border:1px solid #e2e8f0;
+}
+
+.statIcon{
+    font-size:35px;
+}
+
+.statTitle{
+    color:#64748b;
+    margin-top:7px;
+    font-size:14px;
+}
+
+.number{
+    font-size:32px;
+    font-weight:bold;
+    margin-top:8px;
+}
+
+.section{
+    background:white;
+    padding:22px;
+    border-radius:18px;
+    margin-top:20px;
+    box-shadow:0 7px 25px rgba(0,0,0,.07);
+    border:1px solid #e2e8f0;
+}
+
+.section h2{
+    margin-top:0;
+}
+
+.grid2{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:18px;
+}
+
+.summaryCard{
+    background:#f8fafc;
+    border:1px solid #e2e8f0;
+    border-radius:14px;
+    padding:15px;
+}
+
+.summaryCard h3{
+    margin:0 0 12px;
+    font-size:17px;
+}
+
+.summaryRow{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    padding:8px 0;
+    border-bottom:1px solid #e2e8f0;
+}
+
+.summaryRow:last-child{
+    border-bottom:0;
+}
+
+.badge{
+    background:#dbeafe;
+    color:#1d4ed8;
+    padding:3px 9px;
+    border-radius:20px;
+    font-weight:bold;
+}
+
+.tableWrap{
+    width:100%;
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    min-width:700px;
+    border-collapse:collapse;
+}
+
+th,td{
+    padding:11px 10px;
+    border-bottom:1px solid #e2e8f0;
+    text-align:left;
+    white-space:nowrap;
+}
+
+th{
+    background:#f8fafc;
+    color:#334155;
+    position:sticky;
+    top:0;
+}
+
+input,select{
+    padding:11px;
+    border:1px solid #cbd5e1;
+    border-radius:9px;
+    width:100%;
+    background:white;
+}
+
+.formGrid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:10px;
+}
+
+.checkbox{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin:10px 0;
+}
+
+.checkbox input{
+    width:auto;
+}
+
+.loading{
+    text-align:center;
+    padding:25px;
+    color:#64748b;
+}
+
+.errorBox{
+    display:none;
+    background:#fee2e2;
+    color:#991b1b;
+    border:1px solid #fecaca;
+    padding:12px;
+    border-radius:10px;
+    margin-top:15px;
+}
+
+.successBox{
+    display:none;
+    background:#dcfce7;
+    color:#166534;
+    border:1px solid #bbf7d0;
+    padding:12px;
+    border-radius:10px;
+    margin-top:15px;
+}
+
+@media(max-width:600px){
+    .container{
+        padding:12px;
+    }
+
+    .section{
+        padding:15px;
+        border-radius:14px;
+    }
+
+    .stat{
+        padding:17px;
+    }
+
+    .number{
+        font-size:28px;
+    }
+
+    button{
+        width:100%;
+    }
+
+    .actions{
+        width:100%;
+    }
+
+    .actions button{
+        flex:1;
+    }
+}
+</style>
 </head>
 
 <body>
 
 <div class="header">
-
-<h1>📊 Machine Asset Dashboard</h1>
-
-<div id="user"></div>
-
+    <h1>📊 Machine Asset Management System</h1>
+    <div class="headerUser" id="user"></div>
 </div>
 
 <div class="container">
 
-<button class="back"
-onclick="location.href='home.html'">
-
-⬅️ Home
-
-</button>
-
-
-<div class="cards">
-
-<div class="stat">
-
-<div class="statIcon">🏭</div>
-
-<div>Total Machines</div>
-
-<div class="number"
-id="totalMachines">
-0
-</div>
-
-</div>
-
-
-<div class="stat">
-
-<div class="statIcon">🔩</div>
-
-<div>Child Assets</div>
-
-<div class="number"
-id="totalChildren">
-0
-</div>
-
-</div>
-
-
-<div class="stat">
-
-<div class="statIcon">🏗️</div>
-
-<div>Production Entries</div>
-
-<div class="number"
-id="productionEntries">
-0
-</div>
-
-</div>
-
-</div>
-
-
-<div class="section">
-
-<h2>📋 Recent Machines</h2>
-
-<div style="overflow:auto">
-
-<table>
-
-<thead>
-
-<tr>
-
-<th>Asset</th>
-<th>Machine</th>
-<th>Brand</th>
-<th>Model</th>
-<th>Type</th>
-<th>Location</th>
-<th>Line</th>
-
-</tr>
-
-</thead>
-
-<tbody id="machines"></tbody>
-
-</table>
-
-</div>
-
-</div>
-
-
-<div class="section"
-id="usersSection"
-style="display:none">
-
-<h2>👥 User Management</h2>
-
-<p>
-Administrator یہاں users create/update کر سکتا ہے۔
-</p>
-
-<div style="
-display:grid;
-grid-template-columns:
-repeat(auto-fit,minmax(180px,1fr));
-gap:10px">
-
-<input id="uUsername"
-placeholder="Username">
-
-<input id="uPassword"
-placeholder="Password">
-
-<input id="uDisplay"
-placeholder="Display Name">
-
-<select id="uRole">
-
-<option>Viewer</option>
-<option>Production</option>
-<option>Maintenance</option>
-<option>Administrator</option>
-
-</select>
-
-</div>
-
-<br>
-
-<label>
-<input type="checkbox"
-id="uActive"
-checked>
-Active
-</label>
-
-<br>
-
-<label>
-<input type="checkbox"
-id="uProduction">
-Production Access
-</label>
-
-<br>
-
-<label>
-<input type="checkbox"
-id="uMaintenance">
-Maintenance Access
-</label>
-
-<br>
-
-<label>
-<input type="checkbox"
-id="uDashboard">
-Dashboard Access
-</label>
-
-<br><br>
-
-<button class="save"
-onclick="saveUser()">
-
-💾 Save User
-
-</button>
-
-<hr>
-
-<h3>Existing Users</h3>
-
-<div style="overflow:auto">
-
-<table>
-
-<thead>
-
-<tr>
-<th>Username</th>
-<th>Name</th>
-<th>Role</th>
-<th>Active</th>
-<th>Production</th>
-<th>Maintenance</th>
-<th>Dashboard</th>
-</tr>
-
-</thead>
-
-<tbody id="users"></tbody>
-
-</table>
-
-</div>
-
-</div>
+    <div class="topbar">
+        <div class="actions">
+            <button class="back" onclick="location.href='home.html'">
+                ⬅️ Home
+            </button>
+            <button class="refresh" onclick="loadAll()">
+                🔄 Refresh
+            </button>
+        </div>
+        <div id="lastUpdated" style="color:#64748b;font-size:13px;"></div>
+    </div>
+
+    <div id="errorBox" class="errorBox"></div>
+    <div id="successBox" class="successBox"></div>
+
+    <!-- MAIN STATS -->
+    <div class="cards">
+
+        <div class="stat">
+            <div class="statIcon">🏭</div>
+            <div class="statTitle">Total Machines</div>
+            <div class="number" id="totalMachines">0</div>
+        </div>
+
+        <div class="stat">
+            <div class="statIcon">🔩</div>
+            <div class="statTitle">Child Assets</div>
+            <div class="number" id="totalChildren">0</div>
+        </div>
+
+        <div class="stat">
+            <div class="statIcon">🏗️</div>
+            <div class="statTitle">Production Entries</div>
+            <div class="number" id="productionEntries">0</div>
+        </div>
+
+        <div class="stat">
+            <div class="statIcon">⚙️</div>
+            <div class="statTitle">Machine Types</div>
+            <div class="number" id="machineTypes">0</div>
+        </div>
+
+        <div class="stat">
+            <div class="statIcon">🏢</div>
+            <div class="statTitle">Machine Shops</div>
+            <div class="number" id="machineShops">0</div>
+        </div>
+
+    </div>
+
+    <!-- SUMMARY -->
+    <div class="section">
+        <h2>📈 System Summary</h2>
+
+        <div class="grid2">
+
+            <div class="summaryCard">
+                <h3>⚙️ Machine Type</h3>
+                <div id="machineTypeSummary">
+                    <div class="loading">Loading...</div>
+                </div>
+            </div>
+
+            <div class="summaryCard">
+                <h3>🏭 Machine Shop</h3>
+                <div id="shopSummary">
+                    <div class="loading">Loading...</div>
+                </div>
+            </div>
+
+            <div class="summaryCard">
+                <h3>🔩 Child Asset Type</h3>
+                <div id="childTypeSummary">
+                    <div class="loading">Loading...</div>
+                </div>
+            </div>
+
+            <div class="summaryCard">
+                <h3>🏗️ Production Line</h3>
+                <div id="lineSummary">
+                    <div class="loading">Loading...</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- RECENT MACHINES -->
+    <div class="section">
+        <h2>📋 Recent Machines</h2>
+
+        <div class="tableWrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Asset</th>
+                        <th>Machine</th>
+                        <th>Type</th>
+                        <th>Manufacturer</th>
+                        <th>Year</th>
+                        <th>Controller</th>
+                        <th>CNC Control</th>
+                        <th>Power</th>
+                        <th>Voltage</th>
+                        <th>Serial Number</th>
+                        <th>Production Line</th>
+                    </tr>
+                </thead>
+
+                <tbody id="machines">
+                    <tr>
+                        <td colspan="11" class="loading">Loading...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- USER MANAGEMENT -->
+    <div class="section" id="usersSection" style="display:none">
+
+        <h2>👥 User Management</h2>
+
+        <p style="color:#64748b">
+            Administrator can create or update users and permissions.
+        </p>
+
+        <div class="formGrid">
+
+            <input id="uUsername" placeholder="Username">
+
+            <input id="uPassword" type="password" placeholder="Password">
+
+            <input id="uDisplay" placeholder="Display Name">
+
+            <select id="uRole">
+                <option value="Viewer">Viewer</option>
+                <option value="Production">Production</option>
+                <option value="Maintenance">Maintenance</option>
+                <option value="Administrator">Administrator</option>
+            </select>
+
+        </div>
+
+        <div class="checkbox">
+            <input type="checkbox" id="uActive" checked>
+            <label for="uActive">Active</label>
+        </div>
+
+        <div class="checkbox">
+            <input type="checkbox" id="uProduction">
+            <label for="uProduction">Production Access</label>
+        </div>
+
+        <div class="checkbox">
+            <input type="checkbox" id="uMaintenance">
+            <label for="uMaintenance">Maintenance Access</label>
+        </div>
+
+        <div class="checkbox">
+            <input type="checkbox" id="uDashboard">
+            <label for="uDashboard">Dashboard Access</label>
+        </div>
+
+        <button class="save" onclick="saveUser()">
+            💾 Save User
+        </button>
+
+        <hr>
+
+        <h3>Existing Users</h3>
+
+        <div class="tableWrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Name</th>
+                        <th>Role</th>
+                        <th>Active</th>
+                        <th>Production</th>
+                        <th>Maintenance</th>
+                        <th>Dashboard</th>
+                    </tr>
+                </thead>
+
+                <tbody id="users"></tbody>
+            </table>
+        </div>
+
+    </div>
 
 </div>
-
 
 <script>
 
+/* =========================
+   API
+========================= */
+
 const API_URL =
-"YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL";
+"https://script.google.com/macros/s/AKfycbxop4TOck0v3KRllP6qJpNOLqpxyKAzw5YG43IP-lZEVHy_MChTn12RAdFfC_J9qysLsA/exec";
+
 
 const token =
 sessionStorage.getItem("machine_token");
 
 const user =
 JSON.parse(
-sessionStorage.getItem("machine_user") || "null"
+    sessionStorage.getItem("machine_user") || "null"
 );
+
+
+/* =========================
+   LOGIN CHECK
+========================= */
 
 if(!token || !user){
 
-location.href="index.html";
+    location.href="index.html";
 
 }
 
-document.getElementById("user")
-.innerText =
+
+/* =========================
+   USER DISPLAY
+========================= */
+
+document.getElementById("user").innerText =
 "👤 " +
 (user.displayName || user.username) +
 " • " +
-user.role;
+(user.role || "User");
 
+
+/* =========================
+   API FUNCTION
+========================= */
 
 async function api(data){
 
-const response =
-await fetch(API_URL,{
-method:"POST",
-headers:{
-"Content-Type":
-"text/plain;charset=utf-8"
-},
-body:JSON.stringify(data)
-});
+    console.log("API Request:",data);
 
-return await response.json();
+    try{
+
+        const response =
+        await fetch(API_URL,{
+            method:"POST",
+            headers:{
+                "Content-Type":
+                "text/plain;charset=utf-8"
+            },
+            body:JSON.stringify(data),
+            redirect:"follow"
+        });
+
+        const text =
+        await response.text();
+
+        console.log(
+            "HTTP Status:",
+            response.status
+        );
+
+        console.log(
+            "API Response:",
+            text
+        );
+
+        if(!text || !text.trim()){
+
+            throw new Error(
+                "Empty response from Google Apps Script."
+            );
+
+        }
+
+        let result;
+
+        try{
+
+            result =
+            JSON.parse(text.trim());
+
+        }catch(error){
+
+            console.error(
+                "Raw response:",
+                text
+            );
+
+            throw new Error(
+                "Invalid API response: " +
+                text.substring(0,300)
+            );
+
+        }
+
+        if(result.success === false){
+
+            throw new Error(
+                result.message ||
+                "API request failed."
+            );
+
+        }
+
+        return result;
+
+    }catch(error){
+
+        console.error(
+            "API ERROR:",
+            error
+        );
+
+        showError(error.message);
+
+        throw error;
+
+    }
 
 }
 
+
+/* =========================
+   LOAD DASHBOARD
+========================= */
 
 async function loadDashboard(){
 
-const result =
-await api({
+    hideMessages();
 
-action:"getDashboard",
+    try{
 
-token:token
+        const result =
+        await api({
 
-});
+            action:"getDashboard",
 
-if(!result.success){
+            token:token
 
-alert(result.message);
+        });
 
-return;
+
+        if(!result.success){
+
+            throw new Error(
+                result.message ||
+                "Dashboard data could not be loaded."
+            );
+
+        }
+
+
+        const stats =
+        result.stats || {};
+
+
+        document.getElementById(
+            "totalMachines"
+        ).innerText =
+        stats.totalMachines || 0;
+
+
+        document.getElementById(
+            "totalChildren"
+        ).innerText =
+        stats.totalChildAssets || 0;
+
+
+        document.getElementById(
+            "productionEntries"
+        ).innerText =
+        stats.productionEntries || 0;
+
+
+        const recent =
+        result.recentMachines || [];
+
+
+        document.getElementById(
+            "machineTypes"
+        ).innerText =
+        uniqueCount(
+            recent.map(x=>x.type)
+        );
+
+
+        document.getElementById(
+            "machineShops"
+        ).innerText =
+        uniqueCount(
+            (result.productionSummary || [])
+            .map(x=>x.machineShop)
+        );
+
+
+        renderRecentMachines(recent);
+
+
+        renderSummary(
+            "machineTypeSummary",
+            result.machineTypeSummary ||
+            countValues(recent,"type")
+        );
+
+
+        renderSummary(
+            "shopSummary",
+            result.shopSummary ||
+            countValues(
+                result.productionSummary || [],
+                "machineShop"
+            )
+        );
+
+
+        renderSummary(
+            "childTypeSummary",
+            result.childTypeSummary ||
+            {}
+        );
+
+
+        renderSummary(
+            "lineSummary",
+            result.lineSummary ||
+            countValues(
+                result.productionSummary || [],
+                "productionLine"
+            )
+        );
+
+
+        document.getElementById(
+            "lastUpdated"
+        ).innerText =
+        "Last updated: " +
+        new Date().toLocaleString();
+
+    }catch(error){
+
+        console.error(
+            "Dashboard loading error:",
+            error
+        );
+
+    }
 
 }
 
-document.getElementById(
-"totalMachines"
-).innerText =
-result.stats.totalMachines;
 
-document.getElementById(
-"totalChildren"
-).innerText =
-result.stats.totalChildAssets;
+/* =========================
+   RECENT MACHINES
+========================= */
 
-document.getElementById(
-"productionEntries"
-).innerText =
-result.stats.productionEntries;
+function renderRecentMachines(list){
+
+    const tbody =
+    document.getElementById("machines");
+
+    tbody.innerHTML="";
 
 
-const tbody =
-document.getElementById("machines");
+    if(!list.length){
 
-tbody.innerHTML="";
+        tbody.innerHTML =
+        `<tr>
+            <td colspan="11"
+                class="loading">
+                No machine records found.
+            </td>
+        </tr>`;
 
-result.recentMachines.forEach(m=>{
+        return;
 
-tbody.innerHTML += `
+    }
 
-<tr>
 
-<td>${esc(m.assetNumber)}</td>
+    list.forEach(m=>{
 
-<td>${esc(m.machineName)}</td>
+        const row =
+        document.createElement("tr");
 
-<td>${esc(m.brand)}</td>
 
-<td>${esc(m.model)}</td>
+        row.innerHTML = `
 
-<td>${esc(m.type)}</td>
+            <td>${esc(m.assetNumber)}</td>
 
-<td>${esc(m.location)}</td>
+            <td>${esc(m.machineName)}</td>
 
-<td>${esc(m.line)}</td>
+            <td>${esc(m.type)}</td>
 
-</tr>
+            <td>${esc(m.manufacturer || m.brand)}</td>
 
-`;
+            <td>${esc(m.year)}</td>
 
-});
+            <td>${esc(m.controller)}</td>
+
+            <td>${esc(m.cncControl)}</td>
+
+            <td>${esc(m.powerRating || m.power)}</td>
+
+            <td>${esc(m.voltage)}</td>
+
+            <td>${esc(m.serialNumber)}</td>
+
+            <td>${esc(
+                m.departmentProductionLine ||
+                m.line
+            )}</td>
+
+        `;
+
+        tbody.appendChild(row);
+
+    });
 
 }
 
+
+/* =========================
+   USER MANAGEMENT
+========================= */
 
 async function loadUsers(){
 
-if(user.role!=="Administrator")
-return;
+    if(user.role !== "Administrator")
+        return;
 
-document.getElementById(
-"usersSection"
-).style.display="block";
 
-const result =
-await api({
+    document.getElementById(
+        "usersSection"
+    ).style.display="block";
 
-action:"listUsers",
 
-token:token
+    try{
 
-});
+        const result =
+        await api({
 
-if(!result.success){
+            action:"listUsers",
 
-alert(result.message);
+            token:token
 
-return;
+        });
+
+
+        if(!result.success){
+
+            throw new Error(
+                result.message ||
+                "Unable to load users."
+            );
+
+        }
+
+
+        const tbody =
+        document.getElementById("users");
+
+        tbody.innerHTML="";
+
+
+        (result.users || []).forEach(u=>{
+
+            const row =
+            document.createElement("tr");
+
+
+            row.innerHTML = `
+
+                <td>${esc(u.username)}</td>
+
+                <td>${esc(u.displayName)}</td>
+
+                <td>${esc(u.role)}</td>
+
+                <td>${u.active ? "✅" : "❌"}</td>
+
+                <td>${u.production ? "✅" : "❌"}</td>
+
+                <td>${u.maintenance ? "✅" : "❌"}</td>
+
+                <td>${u.dashboard ? "✅" : "❌"}</td>
+
+            `;
+
+            tbody.appendChild(row);
+
+        });
+
+
+    }catch(error){
+
+        console.error(
+            "User loading error:",
+            error
+        );
+
+    }
 
 }
 
-const tbody =
-document.getElementById("users");
 
-tbody.innerHTML="";
-
-result.users.forEach(u=>{
-
-tbody.innerHTML += `
-
-<tr>
-
-<td>${esc(u.username)}</td>
-
-<td>${esc(u.displayName)}</td>
-
-<td>${esc(u.role)}</td>
-
-<td>${u.active?"✅":"❌"}</td>
-
-<td>${u.production?"✅":"❌"}</td>
-
-<td>${u.maintenance?"✅":"❌"}</td>
-
-<td>${u.dashboard?"✅":"❌"}</td>
-
-</tr>
-
-`;
-
-});
-
-}
-
+/* =========================
+   SAVE USER
+========================= */
 
 async function saveUser(){
 
-const username =
-document.getElementById(
-"uUsername"
-).value.trim();
+    try{
 
-const password =
-document.getElementById(
-"uPassword"
-).value;
+        const username =
+        document.getElementById(
+            "uUsername"
+        ).value.trim();
 
-if(!username){
 
-alert("Username required.");
+        const password =
+        document.getElementById(
+            "uPassword"
+        ).value;
 
-return;
+
+        if(!username){
+
+            alert("Username required.");
+
+            return;
+
+        }
+
+
+        const result =
+        await api({
+
+            action:"saveUser",
+
+            token:token,
+
+            user:{
+
+                username:username,
+
+                password:password,
+
+                displayName:
+                document.getElementById(
+                    "uDisplay"
+                ).value.trim(),
+
+                role:
+                document.getElementById(
+                    "uRole"
+                ).value,
+
+                active:
+                document.getElementById(
+                    "uActive"
+                ).checked,
+
+                production:
+                document.getElementById(
+                    "uProduction"
+                ).checked,
+
+                maintenance:
+                document.getElementById(
+                    "uMaintenance"
+                ).checked,
+
+                dashboard:
+                document.getElementById(
+                    "uDashboard"
+                ).checked
+
+            }
+
+        });
+
+
+        alert(
+            result.message ||
+            "User saved successfully."
+        );
+
+
+        if(result.success){
+
+            clearUserForm();
+
+            await loadUsers();
+
+        }
+
+    }catch(error){
+
+        alert(
+            error.message ||
+            "Unable to save user."
+        );
+
+    }
 
 }
 
-const result =
-await api({
 
-action:"saveUser",
+/* =========================
+   CLEAR USER FORM
+========================= */
 
-token:token,
+function clearUserForm(){
 
-user:{
+    document.getElementById(
+        "uUsername"
+    ).value="";
 
-username:username,
+    document.getElementById(
+        "uPassword"
+    ).value="";
 
-password:password,
+    document.getElementById(
+        "uDisplay"
+    ).value="";
 
-displayName:
-document.getElementById(
-"uDisplay"
-).value,
+    document.getElementById(
+        "uRole"
+    ).value="Viewer";
 
-role:
-document.getElementById(
-"uRole"
-).value,
+    document.getElementById(
+        "uActive"
+    ).checked=true;
 
-active:
-document.getElementById(
-"uActive"
-).checked,
+    document.getElementById(
+        "uProduction"
+    ).checked=false;
 
-production:
-document.getElementById(
-"uProduction"
-).checked,
+    document.getElementById(
+        "uMaintenance"
+    ).checked=false;
 
-maintenance:
-document.getElementById(
-"uMaintenance"
-).checked,
-
-dashboard:
-document.getElementById(
-"uDashboard"
-).checked
-
-}
-
-});
-
-alert(result.message);
-
-if(result.success){
-
-loadUsers();
-
-}
+    document.getElementById(
+        "uDashboard"
+    ).checked=false;
 
 }
 
 
-function esc(v){
+/* =========================
+   HELPERS
+========================= */
 
-return String(v||"")
-.replace(/&/g,"&amp;")
-.replace(/</g,"&lt;")
-.replace(/>/g,"&gt;")
-.replace(/"/g,"&quot;")
-.replace(/'/g,"&#039;");
+function countValues(list,key){
+
+    const obj={};
+
+    (list || []).forEach(item=>{
+
+        const value =
+        item &&
+        item[key]
+        ? String(item[key])
+        : "Unknown";
+
+        obj[value] =
+        (obj[value] || 0) + 1;
+
+    });
+
+    return obj;
 
 }
 
 
-loadDashboard();
-loadUsers();
+function uniqueCount(list){
+
+    return new Set(
+        (list || [])
+        .filter(Boolean)
+        .map(String)
+    ).size;
+
+}
+
+
+function renderSummary(elementId,data){
+
+    const box =
+    document.getElementById(elementId);
+
+    box.innerHTML="";
+
+
+    if(!data){
+
+        box.innerHTML =
+        `<div style="color:#64748b">
+            No data available.
+        </div>`;
+
+        return;
+
+    }
+
+
+    let entries=[];
+
+
+    if(Array.isArray(data)){
+
+        data.forEach(item=>{
+
+            if(typeof item === "object"){
+
+                const key =
+                item.name ||
+                item.type ||
+                item.label ||
+                item.machineShop ||
+                "Unknown";
+
+                const value =
+                item.count ||
+                item.total ||
+                0;
+
+                entries.push([
+                    key,
+                    value
+                ]);
+
+            }
+
+        });
+
+    }else{
+
+        entries =
+        Object.entries(data);
+
+    }
+
+
+    if(!entries.length){
+
+        box.innerHTML =
+        `<div style="color:#64748b">
+            No data available.
+        </div>`;
+
+        return;
+
+    }
+
+
+    entries
+    .sort((a,b)=>Number(b[1])-Number(a[1]))
+    .slice(0,10)
+    .forEach(([name,count])=>{
+
+        box.innerHTML += `
+
+            <div class="summaryRow">
+
+                <span>${esc(name)}</span>
+
+                <span class="badge">
+                    ${esc(count)}
+                </span>
+
+            </div>
+
+        `;
+
+    });
+
+}
+
+
+function esc(value){
+
+    return String(value ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+function showError(message){
+
+    const box =
+    document.getElementById("errorBox");
+
+    box.innerText =
+    "❌ " + message;
+
+    box.style.display="block";
+
+}
+
+
+function hideMessages(){
+
+    document.getElementById(
+        "errorBox"
+    ).style.display="none";
+
+    document.getElementById(
+        "successBox"
+    ).style.display="none";
+
+}
+
+
+/* =========================
+   LOAD EVERYTHING
+========================= */
+
+async function loadAll(){
+
+    await loadDashboard();
+
+    await loadUsers();
+
+}
+
+
+/* START */
+
+loadAll();
 
 </script>
 
 </body>
-
 </html>
