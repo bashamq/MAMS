@@ -371,6 +371,23 @@ grid-template-columns:1fr;
 
 }
 
+
+/* ===== MAMS PROFESSIONAL THEME ===== */
+:root{--navy:#0b1220;--blue:#2563eb;--teal:#0f766e;--green:#16a34a;--amber:#d97706;--red:#dc2626;--bg:#f4f7fb;--line:#e2e8f0;--text:#0f172a;--muted:#64748b}
+body{background:radial-gradient(circle at top,#eef5ff 0,#f7fafc 48%,#eef2f7 100%);color:var(--text)}
+.header{background:linear-gradient(135deg,var(--navy),#123b7a 55%,var(--teal));position:relative;overflow:hidden}
+.header:after{content:"";position:absolute;width:280px;height:280px;border-radius:50%;right:-110px;top:-160px;background:rgba(255,255,255,.08)}
+.card,.section,.stat{border:1px solid rgba(148,163,184,.22);box-shadow:0 12px 35px rgba(15,23,42,.08);transition:.2s}
+.card:hover,.section:hover{box-shadow:0 16px 42px rgba(15,23,42,.11)}
+input,select,textarea{min-height:44px;transition:.2s}
+input:focus,select:focus,textarea:focus{border-color:#2563eb!important;box-shadow:0 0 0 4px rgba(37,99,235,.10)!important}
+button{min-height:44px}
+.save,.confirmBtn,.confirmReview{background:linear-gradient(135deg,#16a34a,#15803d)!important}
+.reviewHeader{background:linear-gradient(135deg,#0f172a,#0f766e)!important}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);opacity:0;z-index:9999;pointer-events:none;padding:14px 20px;border-radius:14px;background:#0f172a;color:#fff;box-shadow:0 12px 35px rgba(0,0,0,.25);font-weight:700;transition:.25s}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:600px){.container{padding:12px!important}.header{padding:20px 14px!important}.header h1{font-size:22px!important}.card,.section{padding:16px!important}button{min-height:46px}}
+
 </style>
 
 </head>
@@ -1494,6 +1511,11 @@ document.getElementById(
 "productionLine"
 ).value,
 
+processLocation:
+document.getElementById(
+"processLocation"
+).value,
+
 machineLocation:
 document.getElementById(
 "processLocation"
@@ -1555,40 +1577,23 @@ production
 
 if(result.success){
 
-document.getElementById(
-"msg"
-).innerHTML=
-"✅ " + result.message;
+document.getElementById("msg").innerHTML =
+"✅ " + (result.message || "Production entry saved successfully.");
 
+showToast("✅ Production entry saved successfully.");
 
-/* Hide review */
-
-document.getElementById(
-"reviewCard"
-).style.display="none";
-
-document.getElementById(
-"entryCard"
-).style.display="block";
-
-
-/* Clear */
-
+document.getElementById("reviewCard").style.display="none";
+document.getElementById("entryCard").style.display="block";
 clearForm();
 
-
-window.scrollTo({
-top:0,
-behavior:"smooth"
-});
-
+setTimeout(function(){
+    window.location.reload();
+},1500);
 
 }else{
 
-document.getElementById(
-"msg"
-).innerHTML=
-"❌ " + result.message;
+document.getElementById("msg").innerHTML =
+"❌ " + (result.message || "Unable to save production entry.");
 
 }
 
@@ -1605,6 +1610,12 @@ document.getElementById(
 
 }
 
+
+function showToast(message){
+let t=document.getElementById("mamsToast");
+if(!t){t=document.createElement("div");t.id="mamsToast";t.className="toast";document.body.appendChild(t);}
+t.textContent=message;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1300);
+}
 
 /* ==================================================
    CLEAR FORM
