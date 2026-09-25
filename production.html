@@ -1265,7 +1265,7 @@ document.getElementById(
    REVIEW DATA
 ================================================== */
 
-function reviewData(){
+async function reviewData(){
 
 const asset =
 document.getElementById(
@@ -1373,6 +1373,29 @@ return;
 
 }
 
+
+/* Duplicate check before review */
+try{
+const duplicateResult = await api({
+action:"checkProductionDuplicate",
+token:token,
+production:{
+assetNumber:asset,
+productionLine:line,
+partName:parts.join(", "),
+machineParts:parts.join(", ")
+}
+});
+
+if(duplicateResult && duplicateResult.duplicate){
+alert("❌ " + duplicateResult.message);
+return;
+}
+}catch(error){
+console.error(error);
+alert("❌ Unable to verify duplicate registration. Please try again.");
+return;
+}
 
 /* Fill summary */
 
