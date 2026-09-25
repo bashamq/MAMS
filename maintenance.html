@@ -324,6 +324,31 @@ cursor:not-allowed;
 }
 
 
+/* ================= EXISTING ASSET NOTICE ================= */
+
+.existingAssetNotice{
+background:#eff6ff;
+border:1px solid #93c5fd;
+color:#1e3a8a;
+padding:13px 15px;
+border-radius:12px;
+margin-top:14px;
+font-weight:700;
+line-height:1.5;
+}
+
+.existingAssetNotice.warning{
+background:#fff7ed;
+border-color:#fdba74;
+color:#9a3412;
+}
+
+.existingAssetNotice.success{
+background:#f0fdf4;
+border-color:#86efac;
+color:#166534;
+}
+
 /* ================= MESSAGE ================= */
 
 #msg{
@@ -589,6 +614,8 @@ onclick="loadMachine()">
 id="productionInfo"
 class="productionInfo hidden">
 </div>
+
+<div id="existingAssetNotice" class="existingAssetNotice hidden"></div>
 
 </div>
 
@@ -1289,6 +1316,10 @@ document.getElementById(
 ).innerHTML=
 "⏳ Loading machine data...";
 
+const existingNotice = document.getElementById("existingAssetNotice");
+existingNotice.className = "existingAssetNotice hidden";
+existingNotice.innerHTML = "";
+
 
 try{
 
@@ -1403,6 +1434,28 @@ child=>{
 addChild(child);
 });
 
+}
+
+
+/* Existing Asset Status */
+const notice = document.getElementById("existingAssetNotice");
+const childCount = result.children ? result.children.length : 0;
+const machineExists = !!result.machine;
+const productionExists = result.production && result.production.length > 0;
+
+if(childCount > 0){
+  notice.className = "existingAssetNotice success";
+  notice.innerHTML = `✅ <b>Child Assets Already Filled</b><br>Asset <b>${asset}</b> already has <b>${childCount}</b> linked child asset(s). Existing child assets are shown below.`;
+}else if(machineExists){
+  notice.className = "existingAssetNotice";
+  notice.innerHTML = `ℹ️ <b>Machine Data Already Filled</b><br>Asset <b>${asset}</b> already has maintenance information saved. No child assets are currently linked.`;
+}else if(productionExists){
+  notice.className = "existingAssetNotice warning";
+  notice.innerHTML = `⚠️ <b>Production Asset Found</b><br>Asset <b>${asset}</b> exists in Production Entry, but maintenance data and child assets have not been filled yet.`;
+}
+
+if(childCount > 0 || machineExists || productionExists){
+  notice.classList.remove("hidden");
 }
 
 
