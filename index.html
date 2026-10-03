@@ -229,10 +229,10 @@ window.location.href =
 
 }catch(error){
 
-msg.innerHTML =
-"❌ Connection error.";
+const message = error && error.message ? error.message : String(error);
+msg.innerHTML = "❌ " + message;
 
-console.error(error);
+console.error("MAMS Login Error:", error);
 }
 
 }
