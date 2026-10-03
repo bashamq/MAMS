@@ -540,26 +540,7 @@ button{min-height:44px}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 @media(max-width:600px){.container{padding:12px!important}.header{padding:20px 14px!important}.header h1{font-size:22px!important}.card,.section{padding:16px!important}button{min-height:46px}}
 
-
-.toolSection{
-border:2px solid #dbeafe;
-background:#f8fbff;
-padding:20px;
-border-radius:16px;
-margin-top:20px;
-}
-.tool{
-border:1px solid #cbd5e1;
-background:white;
-padding:18px;
-border-radius:14px;
-margin-top:15px;
-position:relative;
-box-shadow:0 4px 12px rgba(15,23,42,.05);
-}
-.toolTitleSmall{font-weight:bold;font-size:16px;margin-bottom:15px;color:#334155;padding-right:50px;}
-.detailHint{font-size:12px;color:#64748b;margin-top:4px;}
-
+.techPanel{margin-top:14px;padding:14px;border:1px dashed #cbd5e1;border-radius:12px;background:#f8fafc}.techPanel h4{margin:0 0 10px}.techGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.toolSection{margin-top:18px}.toolCard{background:#f8fafc;border:1px solid #dbe3ef;border-radius:14px;padding:14px;margin-top:10px;position:relative}.toolGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.toolCard .remove{position:absolute;right:10px;top:10px}.subTitle{font-weight:800;color:#334155;margin-bottom:8px}.hidden{display:none!important}@media(max-width:900px){.techGrid,.toolGrid{grid-template-columns:1fr 1fr}}@media(max-width:600px){.techGrid,.toolGrid{grid-template-columns:1fr}}
 </style>
 
 </head>
@@ -913,19 +894,15 @@ onclick="addChild()">
      MACHINE TOOLS
 ================================================== -->
 
-<div id="toolSection" class="toolSection">
-
-<div class="childHeader">
-<div>
-<div class="childTitle">🛠️ Machine Tools</div>
-<div class="detailHint">Record the tools assigned to this machine. You can add multiple Fixed Tools and Cutting Tools.</div>
-</div>
-</div>
-
-<div id="tools"></div>
-
-<button type="button" class="add" onclick="addTool()">➕ Add Tool</button>
-
+<div id="toolSection" class="card toolSection">
+  <div class="childHeader">
+    <div>
+      <div class="childTitle">🛠 Machine Tools</div>
+      <div class="requiredNotice">Store the fixed tools, cutting tools and other tooling used on this machine.</div>
+    </div>
+  </div>
+  <div id="tools"></div>
+  <button type="button" class="add" onclick="addTool()">➕ Add Machine Tool</button>
 </div>
 
 
@@ -1159,6 +1136,11 @@ class="reviewValue">
 
 <div id="reviewChildrenList"></div>
 
+</div>
+
+<div class="reviewChildren">
+<div class="reviewLabel">🛠 Machine Tools</div>
+<div id="reviewToolsList"></div>
 </div>
 
 
@@ -1476,7 +1458,7 @@ addChild(child);
 
 }
 
-/* Existing Machine Tools */
+// Existing machine tools
 document.getElementById("tools").innerHTML="";
 if(result.tools && result.tools.length){
   result.tools.forEach(tool=>addTool(tool));
@@ -1920,76 +1902,225 @@ document.getElementById(
 "machineType"
 ).value;
 
+
 if(!machineType){
-alert("Please select Machine Type first.");
+
+alert(
+"Please select Machine Type first."
+);
+
 return;
+
 }
 
-const container=document.getElementById("children");
-const div=document.createElement("div");
+
+const container =
+document.getElementById(
+"children"
+);
+
+
+const div =
+document.createElement(
+"div"
+);
+
+
 div.className="child";
 
-div.dataset.type=data.childAssetType || "";
-div.dataset.name=data.childAssetName || "";
-div.dataset.axis=data.axis || "";
-div.dataset.brand=data.brand || "";
-div.dataset.model=data.model || "";
-div.dataset.serialNumber=data.serialNumber || "";
-div.dataset.partNumber=data.partNumber || "";
-div.dataset.locationOnMachine=data.locationOnMachine || "";
-div.dataset.voltage=data.voltage || "";
-div.dataset.current=data.current || "";
-div.dataset.power=data.power || "";
-div.dataset.function=data.function || "";
-div.dataset.condition=data.condition || "";
-div.dataset.remarks=data.remarks || "";
-div.dataset.driveType=data.driveType || "";
-div.dataset.flangeType=data.flangeType || "";
-div.dataset.beltNumber=data.beltNumber || "";
+
+div.dataset.type =
+data.childAssetType || "";
+
+div.dataset.name =
+data.childAssetName || "";
+
+div.dataset.axis =
+data.axis || "";
+
 
 div.innerHTML=`
-<button type="button" class="remove" onclick="this.parentElement.remove()">✖</button>
-<div class="childTitleSmall">Child Asset Technical Details</div>
+
+<button
+type="button"
+class="remove"
+onclick="this.parentElement.remove()">
+
+✖
+
+</button>
+
+
+<div class="childTitleSmall">
+
+Child Asset
+
+</div>
+
+
 <div class="grid">
-<div><label>Child Asset Type <span class="required">*</span></label><select class="childType" onchange="childTypeChanged(this)"></select></div>
-<div><label>Child Asset Name <span class="required">*</span></label><select class="childName" onchange="childNameChanged(this)"></select></div>
-<div class="axisField hidden"><label>Axis <span class="required">*</span></label><select class="childAxis"><option value="">Select Axis</option><option value="X Axis">X Axis</option><option value="Y Axis">Y Axis</option><option value="Z Axis">Z Axis</option><option value="4th Axis">4th Axis</option><option value="5th Axis">5th Axis</option></select></div>
-<div><label>Brand</label><input class="childBrand" placeholder="e.g. Siemens, Fanuc, Yaskawa"></div>
-<div><label>Model Number</label><input class="childModel" placeholder="Enter model number"></div>
-<div><label>Serial Number</label><input class="childSerial" placeholder="Enter serial number"></div>
-<div><label>Part Number</label><input class="childPartNumber" placeholder="Enter part number"></div>
-<div><label>Location on Machine</label><input class="childLocation" placeholder="e.g. X Axis, Electrical Cabinet"></div>
-<div><label>Voltage</label><input class="childVoltage" placeholder="e.g. 400 V"></div>
-<div><label>Current (A)</label><input class="childCurrent" placeholder="e.g. 12 A"></div>
-<div><label>Power (kW)</label><input class="childPower" placeholder="e.g. 5.5"></div>
-<div><label>Function</label><input class="childFunction" placeholder="Component function"></div>
-<div><label>Condition</label><select class="childCondition"><option value="">Select Condition</option><option value="New">New</option><option value="Good">Good</option><option value="Fair">Fair</option><option value="Repair Required">Repair Required</option><option value="Replace Required">Replace Required</option></select></div>
-<div><label>Drive Type</label><select class="childDriveType"><option value="">Select Drive Type</option><option value="Direct Drive">Direct Drive</option><option value="Belt Drive">Belt Drive</option><option value="Gear Drive">Gear Drive</option><option value="Coupling Drive">Coupling Drive</option><option value="Other">Other</option></select></div>
-<div><label>Flange Type</label><select class="childFlangeType"><option value="">Select Flange Type</option><option value="B3 Foot Mount">B3 Foot Mount</option><option value="B5 Flange Mount">B5 Flange Mount</option><option value="B14 Flange Mount">B14 Flange Mount</option><option value="B35 Foot + Flange">B35 Foot + Flange</option><option value="Other">Other</option></select></div>
-<div><label>Belt Number</label><input class="childBeltNumber" placeholder="Required when Belt Drive is used"></div>
-<div><label>Remarks</label><input class="childRemarks" placeholder="Additional technical remarks"></div>
-</div>`;
 
-container.appendChild(div);
 
-updateChildOptions(div,data.childAssetType || "",data.childAssetName || "",data.axis || "");
-div.querySelector(".childBrand").value=data.brand || "";
-div.querySelector(".childModel").value=data.model || "";
-div.querySelector(".childSerial").value=data.serialNumber || "";
-div.querySelector(".childPartNumber").value=data.partNumber || "";
-div.querySelector(".childLocation").value=data.locationOnMachine || "";
-div.querySelector(".childVoltage").value=data.voltage || "";
-div.querySelector(".childCurrent").value=data.current || "";
-div.querySelector(".childPower").value=data.power || "";
-div.querySelector(".childFunction").value=data.function || "";
-div.querySelector(".childCondition").value=data.condition || "";
-div.querySelector(".childDriveType").value=data.driveType || "";
-div.querySelector(".childFlangeType").value=data.flangeType || "";
-div.querySelector(".childBeltNumber").value=data.beltNumber || "";
-div.querySelector(".childRemarks").value=data.remarks || "";
+<div>
+
+<label>
+
+Child Asset Type
+<span class="required">*</span>
+
+</label>
+
+<select
+class="childType"
+onchange="childTypeChanged(this)">
+
+</select>
+
+</div>
+
+
+<div>
+
+<label>
+
+Child Asset Name
+<span class="required">*</span>
+
+</label>
+
+<select
+class="childName"
+onchange="childNameChanged(this)">
+
+</select>
+
+</div>
+
+
+<div
+class="axisField hidden">
+
+<label>
+
+Axis
+<span class="required">*</span>
+
+</label>
+
+<select
+class="childAxis">
+
+<option value="">
+Select Axis
+</option>
+
+<option value="X Axis">
+X Axis
+</option>
+
+<option value="Y Axis">
+Y Axis
+</option>
+
+<option value="Z Axis">
+Z Axis
+</option>
+
+<option value="4th Axis">
+4th Axis
+</option>
+
+<option value="5th Axis">
+5th Axis
+</option>
+
+</select>
+
+</div>
+
+
+</div>
+
+<div class="techPanel">
+  <h4>Technical Details</h4>
+  <div class="techGrid">
+    <div><label>Manufacturer</label><input class="childBrand" placeholder="Manufacturer"></div>
+    <div><label>Model Number</label><input class="childModel" placeholder="Model Number"></div>
+    <div><label>Part Number</label><input class="childPartNumber" placeholder="Part Number"></div>
+    <div><label>Serial Number</label><input class="childSerial" placeholder="Serial Number"></div>
+    <div><label>Location on Machine</label><input class="childLocation" placeholder="e.g. X Axis Cabinet"></div>
+    <div><label>Function</label><input class="childFunction" placeholder="Function"></div>
+    <div><label>Condition</label><input class="childCondition" placeholder="Condition"></div>
+    <div><label>Power (kW)</label><input class="childPowerKw" placeholder="e.g. 15"></div>
+    <div><label>Voltage (V)</label><input class="childVoltageV" placeholder="e.g. 400"></div>
+    <div><label>Current (A)</label><input class="childCurrentA" placeholder="e.g. 28"></div>
+    <div><label>Frequency (Hz)</label><input class="childFrequency" placeholder="e.g. 50"></div>
+    <div><label>RPM</label><input class="childRpm" placeholder="e.g. 3000"></div>
+    <div><label>Phase</label><input class="childPhase" placeholder="e.g. 3"></div>
+    <div><label>Mounting Type</label><input class="childMounting" placeholder="Mounting Type"></div>
+    <div><label>Flange Type</label><input class="childFlange" placeholder="e.g. B5"></div>
+    <div><label>Drive Arrangement</label><select class="childDriveArrangement" onchange="childDriveChanged(this)"><option value="">Select</option><option>Direct Drive</option><option>Flange Mounted</option><option>Belt Drive</option><option>Gear Drive</option><option>Chain Drive</option><option>Coupling Drive</option><option>Other</option></select></div>
+  </div>
+  <div class="beltPanel hidden">
+    <div class="subTitle">Belt Details</div>
+    <div class="techGrid">
+      <div><label>Belt Type</label><input class="childBeltType" placeholder="e.g. V-Belt"></div>
+      <div><label>Belt Number</label><input class="childBeltNumber" placeholder="e.g. SPA-1250"></div>
+      <div><label>Belt Manufacturer</label><input class="childBeltManufacturer" placeholder="Manufacturer"></div>
+      <div><label>Belt Length</label><input class="childBeltLength" placeholder="Length"></div>
+      <div><label>Belt Quantity</label><input class="childBeltQuantity" placeholder="Quantity"></div>
+      <div><label>Driver Pulley</label><input class="childDriverPulley" placeholder="Size / Type"></div>
+      <div><label>Driven Pulley</label><input class="childDrivenPulley" placeholder="Size / Type"></div>
+    </div>
+  </div>
+  <div style="margin-top:10px"><label>Remarks</label><input class="childRemarks" placeholder="Component remarks"></div>
+</div>
+
+`;
+
+
+container.appendChild(
+div
+);
+
+populateChildDetails(div,data);
+
+updateChildOptions(
+div,
+data.childAssetType || "",
+data.childAssetName || "",
+data.axis || ""
+);
 
 }
 
+
+function setField_(div, selector, value){
+  const el = div.querySelector(selector);
+  if(el) el.value = value || "";
+}
+
+function populateChildDetails(div, data={}){
+  setField_(div,".childBrand",data.brand); setField_(div,".childModel",data.model);
+  setField_(div,".childPartNumber",data.partNumber); setField_(div,".childSerial",data.serialNumber);
+  setField_(div,".childLocation",data.locationOnMachine); setField_(div,".childFunction",data.function);
+  setField_(div,".childCondition",data.condition); setField_(div,".childPowerKw",data.powerKw);
+  setField_(div,".childVoltageV",data.voltageV || data.voltage); setField_(div,".childCurrentA",data.currentA || data.current);
+  setField_(div,".childFrequency",data.frequencyHz); setField_(div,".childRpm",data.rpm); setField_(div,".childPhase",data.phase);
+  setField_(div,".childMounting",data.mountingType); setField_(div,".childFlange",data.flangeType);
+  setField_(div,".childDriveArrangement",data.driveArrangement); setField_(div,".childBeltType",data.beltType);
+  setField_(div,".childBeltNumber",data.beltNumber); setField_(div,".childBeltManufacturer",data.beltManufacturer);
+  setField_(div,".childBeltLength",data.beltLength); setField_(div,".childBeltQuantity",data.beltQuantity);
+  setField_(div,".childDriverPulley",data.driverPulley); setField_(div,".childDrivenPulley",data.drivenPulley);
+  setField_(div,".childRemarks",data.remarks);
+  const drive=div.querySelector(".childDriveArrangement"); if(drive) childDriveChanged(drive);
+}
+
+function childDriveChanged(select){
+  const div=select.closest(".child");
+  const panel=div && div.querySelector(".beltPanel");
+  if(panel) panel.classList.toggle("hidden", select.value !== "Belt Drive");
+}
 
 /* ==================================================
    CHILD TYPE OPTIONS
@@ -2259,40 +2390,40 @@ axisSelect.value="";
 }
 
 
+function addTool(data={}){
+  const container=document.getElementById("tools");
+  const div=document.createElement("div");
+  div.className="toolCard tool";
+  div.innerHTML=`
+    <button type="button" class="remove" onclick="this.parentElement.remove()">✖</button>
+    <div class="toolGrid">
+      <div><label>Tool Type <span class="required">*</span></label><select class="toolType"><option value="">Select Type</option><option>Fixed Tool</option><option>Cutting Tool</option><option>Tool Holder</option><option>Drill</option><option>Milling Cutter</option><option>Insert</option><option>Reamer</option><option>Tap</option><option>Boring Tool</option><option>Other</option></select></div>
+      <div><label>Tool Name</label><input class="toolName" placeholder="Tool Name"></div>
+      <div><label>Tool Number</label><input class="toolNumber" placeholder="T01 / Tool No."></div>
+      <div><label>Manufacturer</label><input class="toolManufacturer" placeholder="Manufacturer"></div>
+      <div><label>Model</label><input class="toolModel" placeholder="Model"></div>
+      <div><label>Part Number</label><input class="toolPartNumber" placeholder="Part Number"></div>
+      <div><label>Specification</label><input class="toolSpecification" placeholder="Specification"></div>
+      <div><label>Quantity</label><input class="toolQuantity" type="number" min="0" placeholder="0"></div>
+      <div><label>Holder Type</label><input class="toolHolderType" placeholder="Holder Type"></div>
+      <div><label>Cutting Diameter</label><input class="toolCuttingDiameter" placeholder="mm"></div>
+      <div><label>Insert Type</label><input class="toolInsertType" placeholder="Insert Type"></div>
+      <div><label>Insert Grade</label><input class="toolInsertGrade" placeholder="Grade"></div>
+      <div><label>Flutes</label><input class="toolFlutes" placeholder="Number of flutes"></div>
+      <div><label>Material</label><input class="toolMaterial" placeholder="Material"></div>
+    </div>
+    <div style="margin-top:10px"><label>Remarks</label><input class="toolRemarks" placeholder="Tool remarks"></div>`;
+  container.appendChild(div);
+  setField_(div,".toolType",data.toolType); setField_(div,".toolName",data.toolName); setField_(div,".toolNumber",data.toolNumber);
+  setField_(div,".toolManufacturer",data.manufacturer); setField_(div,".toolModel",data.model); setField_(div,".toolPartNumber",data.partNumber);
+  setField_(div,".toolSpecification",data.specification); setField_(div,".toolQuantity",data.quantity); setField_(div,".toolHolderType",data.holderType);
+  setField_(div,".toolCuttingDiameter",data.cuttingDiameter); setField_(div,".toolInsertType",data.insertType); setField_(div,".toolInsertGrade",data.insertGrade);
+  setField_(div,".toolFlutes",data.flutes); setField_(div,".toolMaterial",data.material); setField_(div,".toolRemarks",data.remarks);
+}
+
 /* ==================================================
    REVIEW MAINTENANCE
 ================================================== */
-
-function addTool(data={}){
-const container=document.getElementById("tools");
-const div=document.createElement("div");
-div.className="tool";
-div.innerHTML=`
-<button type="button" class="remove" onclick="this.parentElement.remove()">✖</button>
-<div class="toolTitleSmall">Machine Tool</div>
-<div class="grid">
-<div><label>Tool Type <span class="required">*</span></label><select class="toolType"><option value="">Select Tool Type</option><option value="Fixed Tool">Fixed Tool</option><option value="Cutting Tool">Cutting Tool</option></select></div>
-<div><label>Tool Name <span class="required">*</span></label><input class="toolName" placeholder="e.g. Face Mill, Fixture, Drill Chuck"></div>
-<div><label>Tool Number</label><input class="toolNumber" placeholder="Tool / Part Number"></div>
-<div><label>Brand</label><input class="toolBrand" placeholder="Brand / Manufacturer"></div>
-<div><label>Model</label><input class="toolModel" placeholder="Model number"></div>
-<div><label>Specification</label><input class="toolSpecification" placeholder="Size / specification"></div>
-<div><label>Location on Machine</label><input class="toolLocation" placeholder="Tool station / holder / position"></div>
-<div><label>Quantity</label><input class="toolQuantity" type="number" min="1" placeholder="1"></div>
-<div><label>Remarks</label><input class="toolRemarks" placeholder="Additional tool information"></div>
-</div>`;
-container.appendChild(div);
-div.querySelector(".toolType").value=data.toolType || "";
-div.querySelector(".toolName").value=data.toolName || "";
-div.querySelector(".toolNumber").value=data.toolNumber || "";
-div.querySelector(".toolBrand").value=data.brand || "";
-div.querySelector(".toolModel").value=data.model || "";
-div.querySelector(".toolSpecification").value=data.specification || "";
-div.querySelector(".toolLocation").value=data.locationOnMachine || "";
-div.querySelector(".toolQuantity").value=data.quantity || "";
-div.querySelector(".toolRemarks").value=data.remarks || "";
-}
-
 
 function reviewMaintenance(){
 
@@ -2483,24 +2614,6 @@ return;
 
 }
 
-const driveType = div.querySelector(".childDriveType").value;
-const beltNumber = div.querySelector(".childBeltNumber").value.trim();
-if(driveType === "Belt Drive" && !beltNumber){
-  alert("Please enter Belt Number when Belt Drive is selected.");
-  div.querySelector(".childBeltNumber").focus();
-  return;
-}
-
-}
-
-const toolDivs = document.querySelectorAll("#tools .tool");
-for(const tool of toolDivs){
-  const toolType = tool.querySelector(".toolType").value;
-  const toolName = tool.querySelector(".toolName").value.trim();
-  if(!toolType || !toolName){
-    alert("Please complete Tool Type and Tool Name for every tool.");
-    return;
-  }
 }
 
 
@@ -2610,59 +2723,106 @@ machineType==="CNC"
    CHILD REVIEW
 ================================================== */
 
-const reviewChildren = document.getElementById("reviewChildrenList");
+const reviewChildren =
+document.getElementById(
+"reviewChildrenList"
+);
+
+
 reviewChildren.innerHTML="";
 
-document.querySelectorAll(".child").forEach((div,index)=>{
-  const type=div.querySelector(".childType").value;
-  const name=div.querySelector(".childName").value;
-  const axis=div.querySelector(".childAxis").value;
-  const fields=[
-    ["Brand",div.querySelector(".childBrand").value],
-    ["Model Number",div.querySelector(".childModel").value],
-    ["Serial Number",div.querySelector(".childSerial").value],
-    ["Part Number",div.querySelector(".childPartNumber").value],
-    ["Location",div.querySelector(".childLocation").value],
-    ["Voltage",div.querySelector(".childVoltage").value],
-    ["Current (A)",div.querySelector(".childCurrent").value],
-    ["Power (kW)",div.querySelector(".childPower").value],
-    ["Function",div.querySelector(".childFunction").value],
-    ["Condition",div.querySelector(".childCondition").value],
-    ["Drive Type",div.querySelector(".childDriveType").value],
-    ["Flange Type",div.querySelector(".childFlangeType").value],
-    ["Belt Number",div.querySelector(".childBeltNumber").value],
-    ["Remarks",div.querySelector(".childRemarks").value]
-  ];
-  const child=document.createElement("div");
-  child.className="reviewChild";
-  let rows=`<h3>Child Asset ${index+1}</h3><div class="reviewChildRow"><b>Child Asset Type:</b> ${escapeHtml(type)}</div><div class="reviewChildRow"><b>Child Asset Name:</b> ${escapeHtml(name)}</div>`;
-  if(axis) rows+=`<div class="reviewChildRow"><b>Axis:</b> ${escapeHtml(axis)}</div>`;
-  fields.forEach(([label,value])=>{if(value) rows+=`<div class="reviewChildRow"><b>${escapeHtml(label)}:</b> ${escapeHtml(value)}</div>`;});
-  child.innerHTML=rows;
-  reviewChildren.appendChild(child);
+
+childDivs.forEach(
+(div,index)=>{
+
+const type =
+div.querySelector(
+".childType"
+).value;
+
+
+const name =
+div.querySelector(
+".childName"
+).value;
+
+
+const axis =
+div.querySelector(
+".childAxis"
+).value;
+
+
+const child =
+document.createElement(
+"div"
+);
+
+
+child.className=
+"reviewChild";
+
+
+let axisHTML="";
+
+
+if(
+axis
+){
+
+axisHTML=`
+
+<div class="reviewChildRow">
+
+<b>Axis:</b>
+${escapeHtml(axis)}
+
+</div>
+
+`;
+
+}
+
+
+child.innerHTML=`
+
+<h3>
+Child Asset ${index+1}
+</h3>
+
+<div class="reviewChildRow">
+
+<b>Child Asset Type:</b>
+${escapeHtml(type)}
+
+</div>
+
+<div class="reviewChildRow">
+
+<b>Child Asset Name:</b>
+${escapeHtml(name)}
+
+</div>
+
+${axisHTML}
+
+`;
+
+
+reviewChildren.appendChild(
+child
+);
+
 });
 
-const reviewTools=document.getElementById("reviewToolsList");
-reviewTools.innerHTML="";
-document.querySelectorAll("#tools .tool").forEach((div,index)=>{
-  const vals=[
-    ["Tool Type",div.querySelector(".toolType").value],
-    ["Tool Name",div.querySelector(".toolName").value],
-    ["Tool Number",div.querySelector(".toolNumber").value],
-    ["Brand",div.querySelector(".toolBrand").value],
-    ["Model",div.querySelector(".toolModel").value],
-    ["Specification",div.querySelector(".toolSpecification").value],
-    ["Location",div.querySelector(".toolLocation").value],
-    ["Quantity",div.querySelector(".toolQuantity").value],
-    ["Remarks",div.querySelector(".toolRemarks").value]
-  ];
-  const card=document.createElement("div");
-  card.className="reviewChild";
-  let rows=`<h3>Tool ${index+1}</h3>`;
-  vals.forEach(([label,value])=>{if(value) rows+=`<div class="reviewChildRow"><b>${escapeHtml(label)}:</b> ${escapeHtml(value)}</div>`;});
-  card.innerHTML=rows;
-  reviewTools.appendChild(card);
-});
+const reviewTools = document.getElementById("reviewToolsList");
+if(reviewTools){
+  const toolDivs=document.querySelectorAll(".tool");
+  reviewTools.innerHTML = toolDivs.length ? Array.from(toolDivs).map((div,i)=>{
+    const v=s=>div.querySelector(s)?.value || "";
+    return `<div class="reviewChild"><h3>Tool ${i+1}: ${escapeHtml(v(".toolName") || "Unnamed Tool")}</h3><div class="reviewChildRow"><b>Type:</b> ${escapeHtml(v(".toolType"))}</div><div class="reviewChildRow"><b>Tool No.:</b> ${escapeHtml(v(".toolNumber"))}</div><div class="reviewChildRow"><b>Manufacturer / Model:</b> ${escapeHtml(v(".toolManufacturer"))} / ${escapeHtml(v(".toolModel"))}</div><div class="reviewChildRow"><b>Specification:</b> ${escapeHtml(v(".toolSpecification"))}</div></div>`;
+  }).join("") : `<div class="requiredNotice">No machine tools added.</div>`;
+}
 
 
 /* ==================================================
@@ -2856,41 +3016,30 @@ document
 .forEach(
 div=>{
 
+const val = selector => div.querySelector(selector)?.value || "";
 children.push({
-childAssetType:div.querySelector(".childType").value,
-childAssetName:div.querySelector(".childName").value,
-axis:div.querySelector(".childAxis").value,
-brand:div.querySelector(".childBrand").value,
-model:div.querySelector(".childModel").value,
-serialNumber:div.querySelector(".childSerial").value,
-partNumber:div.querySelector(".childPartNumber").value,
-locationOnMachine:div.querySelector(".childLocation").value,
-voltage:div.querySelector(".childVoltage").value,
-current:div.querySelector(".childCurrent").value,
-power:div.querySelector(".childPower").value,
-function:div.querySelector(".childFunction").value,
-condition:div.querySelector(".childCondition").value,
-remarks:div.querySelector(".childRemarks").value,
-driveType:div.querySelector(".childDriveType").value,
-flangeType:div.querySelector(".childFlangeType").value,
-beltNumber:div.querySelector(".childBeltNumber").value
+  childAssetType: val(".childType"), childAssetName: val(".childName"), axis: val(".childAxis"),
+  brand: val(".childBrand"), model: val(".childModel"), partNumber: val(".childPartNumber"), serialNumber: val(".childSerial"),
+  locationOnMachine: val(".childLocation"), function: val(".childFunction"), condition: val(".childCondition"),
+  powerKw: val(".childPowerKw"), voltageV: val(".childVoltageV"), currentA: val(".childCurrentA"), frequencyHz: val(".childFrequency"),
+  rpm: val(".childRpm"), phase: val(".childPhase"), mountingType: val(".childMounting"), flangeType: val(".childFlange"),
+  driveArrangement: val(".childDriveArrangement"), beltType: val(".childBeltType"), beltNumber: val(".childBeltNumber"),
+  beltManufacturer: val(".childBeltManufacturer"), beltLength: val(".childBeltLength"), beltQuantity: val(".childBeltQuantity"),
+  driverPulley: val(".childDriverPulley"), drivenPulley: val(".childDrivenPulley"), remarks: val(".childRemarks")
 });
 
 });
 
 
 const tools=[];
-document.querySelectorAll("#tools .tool").forEach(div=>{
+document.querySelectorAll(".tool").forEach(div=>{
+  const val = selector => div.querySelector(selector)?.value || "";
   tools.push({
-    toolType:div.querySelector(".toolType").value,
-    toolName:div.querySelector(".toolName").value,
-    toolNumber:div.querySelector(".toolNumber").value,
-    brand:div.querySelector(".toolBrand").value,
-    model:div.querySelector(".toolModel").value,
-    specification:div.querySelector(".toolSpecification").value,
-    locationOnMachine:div.querySelector(".toolLocation").value,
-    quantity:div.querySelector(".toolQuantity").value,
-    remarks:div.querySelector(".toolRemarks").value
+    toolType: val(".toolType"), toolName: val(".toolName"), toolNumber: val(".toolNumber"),
+    manufacturer: val(".toolManufacturer"), model: val(".toolModel"), partNumber: val(".toolPartNumber"),
+    specification: val(".toolSpecification"), quantity: val(".toolQuantity"), holderType: val(".toolHolderType"),
+    cuttingDiameter: val(".toolCuttingDiameter"), insertType: val(".toolInsertType"), insertGrade: val(".toolInsertGrade"),
+    flutes: val(".toolFlutes"), material: val(".toolMaterial"), remarks: val(".toolRemarks")
   });
 });
 
@@ -2914,8 +3063,9 @@ token,
 machine:
 machine,
 
-children:children,
-tools:tools
+children:
+children,
+tools: tools
 
 });
 
