@@ -477,6 +477,25 @@ Asset Number
 id="assetNumber"
 placeholder="Enter machine asset number">
 
+<div id="productionLoadStatus" class="toolInfo" style="margin-top:9px">🔎 Enter Asset Number to check previous production data.</div>
+
+</div>
+
+
+<!-- MACHINE TYPE -->
+
+<div>
+
+<label>🖥️ Machine Type <span class="required">*</span></label>
+
+<select id="productionMachineType">
+<option value="">Select Machine Type</option>
+<option value="CNC">CNC</option>
+<option value="Conventional">Conventional</option>
+</select>
+
+<div class="toolHint" style="margin-top:7px">If already saved, the system will load it automatically. If not, you can select it here and continue Production Entry.</div>
+
 </div>
 
 
@@ -759,7 +778,7 @@ below.
     <button type="button" data-tool-steps="4" onclick="buildToolAssembly(4,this)">4 Step Tool</button>
     <button type="button" data-tool-steps="5" onclick="buildToolAssembly(5,this)">5 Step Tool</button>
   </div>
-  <div id="toolAssemblyHint" class="toolHint">Machine Type is loaded automatically from Maintenance / Machine Master. It cannot be entered manually.</div>
+  <div id="toolAssemblyHint" class="toolHint">Machine Type is loaded automatically when available. If not available, select it here so Production Entry can continue. Machine registration can be completed later.</div>
   <div id="toolStepsContainer"></div>
   <div id="toolReview" class="toolReview hidden"></div>
   <div class="toolActions">
@@ -828,6 +847,21 @@ Asset Number
 <div
 class="summaryValue"
 id="rAsset">
+-
+</div>
+
+</div>
+
+
+<div class="summaryItem">
+
+<div class="summaryLabel">
+Machine Type
+</div>
+
+<div
+class="summaryValue"
+id="rMachineType">
 -
 </div>
 
@@ -1376,6 +1410,18 @@ return;
 
 }
 
+const machineType = document.getElementById("productionMachineType").value;
+
+if(!machineType){
+
+alert(
+"⚠️ Please select Machine Type: CNC or Conventional."
+);
+
+return;
+
+}
+
 if(!shop){
 
 alert(
@@ -1442,6 +1488,10 @@ return;
 document.getElementById(
 "rAsset"
 ).innerText=asset;
+
+document.getElementById(
+"rMachineType"
+).innerText=machineType;
 
 document.getElementById(
 "rShop"
@@ -1563,6 +1613,9 @@ assetNumber:
 document.getElementById(
 "assetNumber"
 ).value.trim(),
+
+machineType:
+document.getElementById("productionMachineType").value,
 
 machineShop:
 document.getElementById(
@@ -1700,6 +1753,11 @@ element.value="";
 });
 
 
+document.getElementById("productionMachineType").value="";
+document.getElementById("productionMachineType").disabled=false;
+document.getElementById("productionLoadStatus").className="toolInfo";
+document.getElementById("productionLoadStatus").textContent="🔎 Enter Asset Number to check previous production data.";
+
 document.getElementById(
 "machineShop"
 ).value="";
@@ -1783,63 +1841,98 @@ async function loadProductionMachineType(){
   const asset=document.getElementById("assetNumber").value.trim();
   const box=document.getElementById("toolMachineInfo");
   const chooser=document.getElementById("toolTypeChooser");
+  const typeSelect=document.getElementById("productionMachineType");
+  const status=document.getElementById("productionLoadStatus");
   if(!asset){
     savedMachineType="";
+    typeSelect.value="";
+    typeSelect.disabled=false;
     chooser.classList.add("hidden");
     box.className="toolInfo";
     box.textContent="Enter Asset Number first.";
+    status.className="toolInfo";
+    status.textContent="🔎 Enter Asset Number to check previous production data.";
     resetToolAssembly();
     return;
   }
   try{
-    box.textContent="🔎 Loading saved machine type...";
-    const result=await api({action:"getMachineType",token:token,assetNumber:asset});
-    if(!result.success) throw new Error(result.message||"Unable to load machine information.");
+    status.className="toolInfo";
+    status.textContent="🔎 Checking previous production data...";
+    const result=await api({action:"getProductionInfo",token:token,assetNumber:asset});
+    if(!result.success) throw new Error(result.message||"Unable to load production information.");
 
-    savedMachineType=String(result.machineType||"").trim();
-
-    if(result.needsSelection || !savedMachineType){
-      chooser.classList.remove("hidden");
-      box.className="toolInfo";
-      box.textContent="⚠️ No saved Machine Type found. Select CNC or Conventional below to continue.";
-      resetToolAssembly(false);
-      return;
+    // Load the latest saved production record when available.
+    if(result.found && result.latest){
+      const p=result.latest;
+      if(p.machineShop) document.getElementById("machineShop").value=p.machineShop;
+      if(p.productionLine) document.getElementById("productionLine").value=p.productionLine;
+      if(p.processLocation) document.getElementById("processLocation").value=p.processLocation;
+      if(p.operationProcess) document.getElementById("operationProcess").value=p.operationProcess;
+      if(p.machineStatus) document.getElementById("machineStatus").value=p.machineStatus;
+      if(p.ctCycleTime) document.getElementById("ctCycleTime").value=p.ctCycleTime;
+      if(p.remarks) document.getElementById("remarks").value=p.remarks;
+      status.className="toolInfo";
+      status.innerHTML="✅ <b>Production data loaded.</b> Previous record found for this Asset Number. You can review/change it for the current entry.";
+    }else{
+      status.className="toolInfo";
+      status.textContent="🆕 No previous Production data found. You can enter new Production data.";
     }
 
-    chooser.classList.add("hidden");
-    box.innerHTML="✅ Saved Machine Type: <b>"+escapeHtml(savedMachineType)+"</b> — tool configuration is ready.";
+    savedMachineType=String(result.machineType||"").trim();
+    if(savedMachineType){
+      typeSelect.value=savedMachineType;
+      typeSelect.disabled=true;
+      chooser.classList.add("hidden");
+      box.innerHTML="✅ Saved Machine Type: <b>"+escapeHtml(savedMachineType)+"</b> — "+escapeHtml(result.typeSource||"saved record");
+      box.className="toolInfo";
+      document.getElementById("toolAssemblyHint").textContent=savedMachineType+" configuration • "+(result.found?"previous production data loaded":"ready for new Production Entry");
+    }else{
+      typeSelect.disabled=false;
+      typeSelect.value="";
+      chooser.classList.add("hidden");
+      box.className="toolInfo";
+      box.textContent="⚠️ Machine Type is not saved yet. Select CNC or Conventional above to continue.";
+      document.getElementById("toolAssemblyHint").textContent="Select Machine Type above to continue with Tool Assembly.";
+      resetToolAssembly(false);
+    }
+
     if(selectedToolSteps){
       const active=document.querySelector(".toolSteps button.active");
-      buildToolAssembly(selectedToolSteps,active);
+      if(savedMachineType) buildToolAssembly(selectedToolSteps,active);
     }
   }catch(e){
     savedMachineType="";
+    typeSelect.disabled=false;
     chooser.classList.add("hidden");
     box.textContent="❌ "+(e.message||"Machine information could not be loaded.");
+    status.className="toolInfo";
+    status.textContent="⚠️ Previous production data could not be checked. You can still enter data after selecting Machine Type.";
     resetToolAssembly();
   }
 }
 
 function confirmProductionMachineType(){
-  const selected=document.querySelector('input[name="productionMachineType"]:checked');
+  const typeSelect=document.getElementById("productionMachineType");
+  const selected=typeSelect.value;
   const box=document.getElementById("toolMachineInfo");
-  const chooser=document.getElementById("toolTypeChooser");
   if(!selected){
     alert("⚠️ Please select CNC or Conventional.");
     return;
   }
-  savedMachineType=selected.value;
-  chooser.classList.add("hidden");
-  box.innerHTML="⚠️ Machine is not registered yet. Using selected type: <b>"+escapeHtml(savedMachineType)+"</b> for this Production Tool Entry.";
+  savedMachineType=selected;
+  typeSelect.disabled=false;
+  box.innerHTML="✅ Selected Machine Type: <b>"+escapeHtml(savedMachineType)+"</b> — Production Entry can continue. This type will be saved with the Production data.";
   box.className="toolInfo";
   document.getElementById("toolAssemblyHint").textContent=savedMachineType+" configuration • Machine registration can be completed later";
 }
 
-document.getElementById("assetNumber").addEventListener("blur",loadProductionMachineType);
-document.getElementById("assetNumber").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();loadProductionMachineType();}});
 
 function buildToolAssembly(n,btn){
-  if(!savedMachineType){alert("⚠️ Please load a saved Machine Type first. Complete Maintenance / Machine Registration if it is missing.");return;}
+  if(!savedMachineType){
+    const selected=document.getElementById("productionMachineType").value;
+    if(selected){ confirmProductionMachineType(); }
+    else { alert("⚠️ Please select Machine Type: CNC or Conventional."); return; }
+  }
   selectedToolSteps=n;
   document.querySelectorAll(".toolSteps button").forEach(b=>b.classList.remove("active"));
   if(btn) btn.classList.add("active");
