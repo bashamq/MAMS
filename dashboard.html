@@ -12,6 +12,7 @@
 @media(max-width:600px){.container{padding:12px}.section{padding:15px;border-radius:14px}.cards{grid-template-columns:1fr 1fr;gap:10px}.stat{padding:15px}.number{font-size:27px}.positionGrid{grid-template-columns:repeat(2,minmax(135px,1fr));gap:9px}.filters{grid-template-columns:1fr}.actions{width:100%}.actions button{flex:1}.detailGrid{grid-template-columns:1fr 1fr}.header{padding:19px 12px}.header h1{font-size:22px}}
 
 .toolAssemblyCard{border-left:4px solid #0f766e}.toolComponents{margin-top:12px;display:grid;gap:10px}.toolStepCard{background:#f8fafc;border:1px solid #dbe4ee;border-radius:12px;padding:12px}.toolStepTitle{font-weight:800;color:#0f3d5e;margin-bottom:8px}.toolDetailRow{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid #e5e7eb;font-size:13px}.toolDetailRow:last-child{border-bottom:0}.toolDetailRow span{color:#64748b}.toolDetailRow b{text-align:right;color:#0f172a;word-break:break-word}
+.compactDetails{background:#fff;border:1px solid #dbe3ef;border-radius:12px;overflow:hidden;margin-top:10px}.compactDetails summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 14px;min-height:58px}.compactDetails summary::-webkit-details-marker{display:none}.compactDetails summary>span:first-child{min-width:0}.compactDetails summary b{display:block;font-size:14px;color:#0f172a}.compactDetails summary small{display:block;color:#64748b;font-size:12px;margin-top:4px;white-space:normal}.expandHint{font-size:11px;font-weight:800;color:#2563eb;white-space:nowrap}.compactDetails[open] .expandHint{color:#0f766e}.compactDetails[open] .expandHint{font-size:0}.compactDetails[open] .expandHint:after{content:'▼ Close';font-size:11px}.compactDetailBody{padding:0 13px 13px;border-top:1px solid #e2e8f0;background:#fbfdff}.compactGrid{margin-top:12px}.toolCompact{border-left:4px solid #0f766e}.toolCompact .compactDetailBody{background:#fff}.toolCompact .toolComponents{margin-top:12px}
 </style>
 </head>
 <body>
@@ -77,20 +78,37 @@ function renderLines(lines){const box=document.getElementById("lineGrid");box.in
 function openLine(lineName){const line=(dashboardData.lines||[]).find(x=>x.name===lineName);if(!line)return;document.getElementById("layoutSection").classList.remove("hidden");document.getElementById("layoutTitle").innerText="📍 "+line.name+" — Line Layout";document.getElementById("layoutSubtitle").innerText="Machine positions are shown by Process Location / Operation Number. CNC: "+(line.cncCount||0)+" | Total: "+(line.machineCount||0);const grid=document.getElementById("positionGrid");grid.innerHTML="";const map={};(line.assets||[]).forEach(a=>map[String(a.processLocation)]=a);for(let i=1;i<=30;i++){const a=map[String(i)];if(a){grid.innerHTML+=`<div class="position" onclick="openAsset('${jsq(a.assetNumber)}')"><div class="posNo">POSITION / OPERATION ${i}</div><div class="assetNo">${esc(a.assetNumber)}</div><div class="part">${esc(a.partName||"")}</div><div class="assetBadges"><span class="assetBadge ${a.machineType==='CNC'?'cnc':''}">${esc(a.machineType||'')}</span><span class="assetBadge shop">${esc(a.machineShop||'')}</span></div><button class="assetButton" onclick="event.stopPropagation();openAsset('${jsq(a.assetNumber)}')">🔍 Open Asset</button></div>`}else{grid.innerHTML+=`<div class="position empty"><div class="posNo">POSITION / OPERATION ${i}</div><div style="margin-top:20px;color:#94a3b8">No machine assigned</div></div>`}}document.getElementById("layoutSection").scrollIntoView({behavior:"smooth",block:"start"})}
 function closeLayout(){document.getElementById("layoutSection").classList.add("hidden");document.getElementById("assetDetail").classList.add("hidden")}
 function openAsset(assetNumber){const a=(dashboardData.assets||[]).find(x=>String(x.assetNumber)===String(assetNumber));if(!a)return;const d=document.getElementById("assetDetail");d.classList.remove("hidden");d.innerHTML=`<div class="detailHead"><div><div class="detailTitle">🏭 Asset ${esc(a.assetNumber)}</div><div style="color:#475569;margin-top:4px">${esc(a.machineName||"")}</div></div><button class="back" onclick="document.getElementById('assetDetail').classList.add('hidden')">✖ Close</button></div><div class="detailGrid"><div class="info"><small>Machine Type</small><b>${esc(a.machineType)}</b></div><div class="info"><small>Machine Shop</small><b>${esc(a.machineShop)}</b></div><div class="info"><small>Production Line</small><b>${esc(a.productionLine)}</b></div><div class="info"><small>Position / Operation</small><b>${esc(a.processLocation)}</b></div><div class="info"><small>Operation / Process</small><b>${esc(a.operationProcess)}</b></div><div class="info"><small>Part Name</small><b>${esc(a.partName)}</b></div><div class="info"><small>Manufacturer</small><b>${esc(a.manufacturer)}</b></div><div class="info"><small>Controller</small><b>${esc(a.controller)}</b></div><div class="info"><small>Serial Number</small><b>${esc(a.serialNumber)}</b></div></div><h3 style="margin:18px 0 5px">🔩 Child Assets (${(a.children||[]).length})</h3><div class="childGrid">${renderChildren(a.children||[])}</div><h3 style="margin:18px 0 5px">🛠 Machine Tools (${(a.tools||[]).length})</h3><div class="childGrid">${renderTools(a.tools||[])}</div>`;d.scrollIntoView({behavior:"smooth",block:"center"})}
-function renderChildren(children){if(!children.length)return '<div style="color:#64748b">No child assets linked with this machine.</div>';return children.map((c,i)=>`<div class="childCard"><div class="childTitle">${i+1}. ${esc(c.childAssetName||'Child Asset')}</div><div class="childMeta">Type: <b>${esc(c.childAssetType)}</b></div>${c.axis?`<div class="childMeta">Axis: <b>${esc(c.axis)}</b></div>`:""}${c.model?`<div class="childMeta">Model: <b>${esc(c.model)}</b></div>`:""}${c.brand?`<div class="childMeta">Manufacturer: <b>${esc(c.brand)}</b></div>`:""}${c.serialNumber?`<div class="childMeta">Serial: <b>${esc(c.serialNumber)}</b></div>`:""}${c.powerKw?`<div class="childMeta">Power: <b>${esc(c.powerKw)} kW</b></div>`:""}${c.voltageV?`<div class="childMeta">Voltage: <b>${esc(c.voltageV)} V</b></div>`:""}${c.currentA?`<div class="childMeta">Current: <b>${esc(c.currentA)} A</b></div>`:""}${c.flangeType?`<div class="childMeta">Flange: <b>${esc(c.flangeType)}</b></div>`:""}${c.driveArrangement?`<div class="childMeta">Drive: <b>${esc(c.driveArrangement)}</b></div>`:""}${c.beltNumber?`<div class="childMeta">Belt: <b>${esc(c.beltNumber)}</b></div>`:""}</div>`).join("")}
+function renderChildren(children){
+if(!children.length)return '<div style="color:#64748b">No child assets linked with this machine.</div>';
+return children.map((c,i)=>{
+  const details = [
+    c.axis?['Axis',c.axis]:null,
+    c.model?['Model',c.model]:null,
+    c.brand?['Manufacturer',c.brand]:null,
+    c.serialNumber?['Serial Number',c.serialNumber]:null,
+    c.powerKw?['Power',c.powerKw+' kW']:null,
+    c.voltageV?['Voltage',c.voltageV+' V']:null,
+    c.currentA?['Current',c.currentA+' A']:null,
+    c.flangeType?['Flange',c.flangeType]:null,
+    c.driveArrangement?['Drive',c.driveArrangement]:null,
+    c.beltNumber?['Belt',c.beltNumber]:null,
+    c.beltType?['Belt Type',c.beltType]:null,
+    c.beltManufacturer?['Belt Manufacturer',c.beltManufacturer]:null,
+    c.beltLength?['Belt Length',c.beltLength]:null,
+    c.beltQuantity?['Belt Quantity',c.beltQuantity]:null,
+    c.condition?['Condition',c.condition]:null,
+    c.phase?['Phase',c.phase]:null,
+    c.mountingType?['Mounting Type',c.mountingType]:null
+  ].filter(Boolean);
+  return `<details class="compactDetails"><summary><span><b>${i+1}. ${esc(c.childAssetName||'Child Asset')}</b><small>${esc(c.childAssetType||'')}</small></span><span class="expandHint">▶ Details</span></summary><div class="compactDetailBody"><div class="detailGrid compactGrid"><div class="info"><small>Child Asset Type</small><b>${esc(c.childAssetType||'')}</b></div><div class="info"><small>Child Asset Name</small><b>${esc(c.childAssetName||'')}</b></div>${details.map(x=>`<div class="info"><small>${esc(x[0])}</small><b>${esc(x[1])}</b></div>`).join('')}</div></div></details>`;
+}).join('')}
 function renderTools(tools){
 if(!tools.length)return '<div style="color:#64748b">No machine tools linked with this machine.</div>';
 return tools.map((t,i)=>{
+  const title=`${i+1}. 🛠 ${t.toolSteps?esc(t.toolSteps)+'-Step Tool':esc(t.toolName||'Tool')}`;
+  const type=t.machineType||t.toolType||'';
   // V6 Tool Assembly
   if(!t.legacy && (t.components||[]).length){
-    const header=`<div class="childTitle">${i+1}. 🛠 ${esc(t.toolSteps||'')}-Step Tool • ${esc(t.machineType||'')}</div>`;
-    const meta=[
-      t.productionLine?`<div class="childMeta">Production Line: <b>${esc(t.productionLine)}</b></div>`:'',
-      t.processLocation?`<div class="childMeta">Position / Operation: <b>${esc(t.processLocation)}</b></div>`:'',
-      t.operationProcess?`<div class="childMeta">Operation / Process: <b>${esc(t.operationProcess)}</b></div>`:'',
-      t.partName?`<div class="childMeta">Part Name: <b>${esc(t.partName)}</b></div>`:'',
-      t.toolStatus?`<div class="childMeta">Status: <b>${esc(t.toolStatus)}</b></div>`:''
-    ].join('');
     const components=t.components.map(c=>{
       const fieldMap=c.fields||{};
       const entries=Object.entries(fieldMap).filter(([k,v])=>String(v??'').trim()!=='' && !/^assetnumber$|^machinetype$|^toolsteps$/i.test(k));
@@ -106,11 +124,10 @@ return tools.map((t,i)=>{
       const rows=(entries.length?entries:fallback).map(([k,v])=>`<div class="toolDetailRow"><span>${esc(k)}</span><b>${esc(v)}</b></div>`).join('');
       return `<div class="toolStepCard"><div class="toolStepTitle">🔹 STEP ${esc(c.stepNo)} — ${esc(c.componentTitle||'Component')}</div>${rows||'<div style="color:#64748b">No component details entered.</div>'}</div>`;
     }).join('');
-    return `<div class="childCard toolAssemblyCard">${header}${meta}<div class="toolComponents">${components}</div>${t.remarks?`<div class="childMeta">Remarks: <b>${esc(t.remarks)}</b></div>`:''}</div>`;
+    return `<details class="compactDetails toolCompact"><summary><span><b>${title}</b><small>${esc(type)}${t.productionLine?' • '+esc(t.productionLine):''}${t.processLocation?' • Position '+esc(t.processLocation):''}${t.toolStatus?' • '+esc(t.toolStatus):''}</small></span><span class="expandHint">▶ Tool Details</span></summary><div class="compactDetailBody"><div class="detailGrid compactGrid"><div class="info"><small>Machine Type</small><b>${esc(type)}</b></div>${t.productionLine?`<div class="info"><small>Production Line</small><b>${esc(t.productionLine)}</b></div>`:''}${t.processLocation?`<div class="info"><small>Position / Operation</small><b>${esc(t.processLocation)}</b></div>`:''}${t.operationProcess?`<div class="info"><small>Operation / Process</small><b>${esc(t.operationProcess)}</b></div>`:''}${t.partName?`<div class="info"><small>Part Name</small><b>${esc(t.partName)}</b></div>`:''}${t.toolStatus?`<div class="info"><small>Status</small><b>${esc(t.toolStatus)}</b></div>`:''}</div><div class="toolComponents">${components}</div>${t.remarks?`<div class="childMeta">Remarks: <b>${esc(t.remarks)}</b></div>`:''}</div></details>`;
   }
-
   // Legacy Machine_Tools record
-  return `<div class="childCard"><div class="childTitle">${i+1}. ${esc(t.toolName||'Tool')}</div><div class="childMeta">Type: <b>${esc(t.toolType||'')}</b></div>${t.toolNumber?`<div class="childMeta">Tool No.: <b>${esc(t.toolNumber)}</b></div>`:''}${t.manufacturer?`<div class="childMeta">Manufacturer: <b>${esc(t.manufacturer)}</b></div>`:''}${t.model?`<div class="childMeta">Model: <b>${esc(t.model)}</b></div>`:''}${t.partNumber?`<div class="childMeta">Part No.: <b>${esc(t.partNumber)}</b></div>`:''}${t.specification?`<div class="childMeta">Specification: <b>${esc(t.specification)}</b></div>`:''}${t.quantity?`<div class="childMeta">Quantity: <b>${esc(t.quantity)}</b></div>`:''}</div>`;
+  return `<details class="compactDetails"><summary><span><b>${title}</b><small>${esc(t.toolType||'')}${t.toolNumber?' • Tool No. '+esc(t.toolNumber):''}</small></span><span class="expandHint">▶ Tool Details</span></summary><div class="compactDetailBody"><div class="detailGrid compactGrid">${t.toolType?`<div class="info"><small>Type</small><b>${esc(t.toolType)}</b></div>`:''}${t.toolNumber?`<div class="info"><small>Tool No.</small><b>${esc(t.toolNumber)}</b></div>`:''}${t.manufacturer?`<div class="info"><small>Manufacturer</small><b>${esc(t.manufacturer)}</b></div>`:''}${t.model?`<div class="info"><small>Model</small><b>${esc(t.model)}</b></div>`:''}${t.partNumber?`<div class="info"><small>Part No.</small><b>${esc(t.partNumber)}</b></div>`:''}${t.specification?`<div class="info"><small>Specification</small><b>${esc(t.specification)}</b></div>`:''}${t.quantity?`<div class="info"><small>Quantity</small><b>${esc(t.quantity)}</b></div>`:''}</div></div></details>`;
 }).join('');
 }
 function renderFilters(lines,shops){const l=document.getElementById("downloadLine"),s=document.getElementById("downloadShop");const lv=l.value,sv=s.value;l.innerHTML='<option value="ALL">All Production Lines</option>';(lines||[]).forEach(x=>l.innerHTML+=`<option value="${escAttr(x.name)}">${esc(x.name)}</option>`);s.innerHTML='<option value="ALL">All Machine Shops</option>';Object.keys(shops||{}).forEach(x=>s.innerHTML+=`<option value="${escAttr(x)}">${esc(x)}</option>`);if([...l.options].some(o=>o.value===lv))l.value=lv;if([...s.options].some(o=>o.value===sv))s.value=sv}
