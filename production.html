@@ -763,6 +763,7 @@ below.
 <div class="card toolAssemblyCard" id="toolAssemblyCard" style="margin-top:20px">
   <h2>🛠 Machine Tool Assembly</h2>
   <div id="toolMachineInfo" class="toolInfo">Enter Asset Number and load the saved machine record to enable tool configuration.</div>
+  <div id="loadedToolInfo" class="toolInfo hidden" style="margin-top:10px"></div>
   <div id="toolTypeChooser" class="toolTypeChooser hidden">
     <h4>⚠️ Machine Type is not registered for this Asset Number</h4>
     <div>Please select the machine type here so Production Entry can continue. You can complete the full Machine / Maintenance registration later.</div>
@@ -1776,6 +1777,9 @@ t.textContent=message;t.classList.add("show");setTimeout(()=>t.classList.remove(
 
 function clearForm(){
 
+loadedToolAssembly=null;
+renderLoadedTool(null);
+
 document
 .querySelectorAll(
 "#entryCard input, #entryCard textarea"
@@ -1857,6 +1861,17 @@ return String(value || "")
 document.addEventListener("DOMContentLoaded", function(){
   createPartOptions();
   updateSelectedParts();
+
+  const assetInput=document.getElementById("assetNumber");
+  if(assetInput){
+    assetInput.addEventListener("blur", loadProductionMachineType);
+    assetInput.addEventListener("keydown", function(e){
+      if(e.key === "Enter"){
+        e.preventDefault();
+        loadProductionMachineType();
+      }
+    });
+  }
 });
 
 
@@ -1866,6 +1881,7 @@ document.addEventListener("DOMContentLoaded", function(){
 let savedMachineType="";
 let selectedToolSteps=0;
 let toolAssemblyData=null;
+let loadedToolAssembly=null;
 
 const CNC_TOOL_STEPS={
   2:["Holder","Cutting Tool / Insert"],
@@ -1896,6 +1912,8 @@ async function loadProductionMachineType(){
     status.className="toolInfo";
     status.textContent="🔎 Enter Asset Number to check previous production data.";
     resetToolAssembly();
+    loadedToolAssembly=null;
+    renderLoadedTool(null);
     return;
   }
   try{
@@ -1914,11 +1932,26 @@ async function loadProductionMachineType(){
       if(p.machineStatus) document.getElementById("machineStatus").value=p.machineStatus;
       if(p.ctCycleTime) document.getElementById("ctCycleTime").value=p.ctCycleTime;
       if(p.remarks) document.getElementById("remarks").value=p.remarks;
+    }
+
+    // Load the latest saved Tool Assembly for viewing only.
+    // It is NOT assigned to toolAssemblyData, so an existing tool is not duplicated
+    // when the user saves a new production record.
+    loadedToolAssembly = result.latestTool || null;
+    renderLoadedTool(loadedToolAssembly);
+
+    if(result.found && result.toolFound){
       status.className="toolInfo";
-      status.innerHTML="✅ <b>Production data loaded.</b> Previous record found for this Asset Number. You can review/change it for the current entry.";
+      status.innerHTML="✅ <b>Production + Tool data loaded.</b> Previous Production data and Tool Assembly found for this Asset Number.";
+    }else if(result.found && !result.toolFound){
+      status.className="toolInfo";
+      status.innerHTML=`✅ <b>Production data loaded.</b> <span style="color:#b45309">⚠️ Tool Assembly is not registered yet.</span> You can add the Tool below.`;
+    }else if(!result.found && result.toolFound){
+      status.className="toolInfo";
+      status.innerHTML="🛠️ <b>Tool Assembly found.</b> No previous Production data exists for this Asset Number. You can enter new Production data.";
     }else{
       status.className="toolInfo";
-      status.textContent="🆕 No previous Production data found. You can enter new Production data.";
+      status.innerHTML="🆕 <b>New Asset Number.</b> No previous Production or Tool Assembly data found. You can continue with new Production Entry.";
     }
 
     savedMachineType=String(result.machineType||"").trim();
@@ -1951,7 +1984,33 @@ async function loadProductionMachineType(){
     status.className="toolInfo";
     status.textContent="⚠️ Previous production data could not be checked. You can still enter data after selecting Machine Type.";
     resetToolAssembly();
+    loadedToolAssembly=null;
+    renderLoadedTool(null);
   }
+}
+
+function renderLoadedTool(tool){
+  const box=document.getElementById("loadedToolInfo");
+  if(!box) return;
+  if(!tool){
+    box.classList.add("hidden");
+    box.innerHTML="";
+    return;
+  }
+  const comps=Array.isArray(tool.components)?tool.components:[];
+  let html=`<b>🛠 Saved Tool Assembly</b> — ${escapeHtml(tool.machineType || "")} • ${escapeHtml(tool.toolSteps || "")}-Step Tool`;
+  if(tool.productionLine) html+=`<br><span>Production Line: ${escapeHtml(tool.productionLine)}</span>`;
+  if(tool.processLocation) html+=`<br><span>Process Location: ${escapeHtml(tool.processLocation)}</span>`;
+  if(comps.length){
+    html+=`<div style="margin-top:8px;font-weight:800">Saved Steps:</div>`;
+    comps.forEach(c=>{
+      const vals=Object.entries(c.fields||{}).filter(([k,v])=>String(v).trim()).map(([k,v])=>`${escapeHtml(k)}: ${escapeHtml(v)}`).join(" • ");
+      html+=`<div style="margin-top:5px;padding:7px 9px;background:#fff;border:1px solid #dbeafe;border-radius:8px"><b>STEP ${escapeHtml(c.stepNo || "")}</b> — ${escapeHtml(c.componentTitle || c.componentType || "Component")}${vals?`<br><span style="font-size:12px;color:#475569">${vals}</span>`:""}</div>`;
+    });
+  }
+  html+=`<div style="margin-top:8px;color:#64748b;font-size:12px">ℹ️ Existing tool is loaded for reference. It will not be duplicated unless you create/review a new Tool Assembly.</div>`;
+  box.innerHTML=html;
+  box.classList.remove("hidden");
 }
 
 function confirmProductionMachineType(){
