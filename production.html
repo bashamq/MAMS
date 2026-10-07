@@ -691,7 +691,7 @@ placeholder="e.g. 45 sec">
 
 <div
 class="multiHeader"
-onclick="toggleParts()">
+id="partHeader">
 
 <span
 id="selectedPartsText"
@@ -1234,22 +1234,22 @@ return await response.json();
 ================================================== */
 
 function toggleParts(){
-
-const box =
-document.getElementById(
-"partOptions"
-);
-
-box.classList.toggle("show");
-
-document.getElementById(
-"partArrow"
-).innerText =
-box.classList.contains("show")
-? "▲"
-: "▼";
-
+  const box = document.getElementById("partOptions");
+  if(!box) return;
+  const opening = !box.classList.contains("show");
+  box.classList.toggle("show", opening);
+  const arrow = document.getElementById("partArrow");
+  if(arrow) arrow.innerText = opening ? "▲" : "▼";
 }
+
+// Reliable click handler for the Part Name header.
+document.addEventListener("DOMContentLoaded", function(){
+  const header = document.getElementById("partHeader");
+  if(header) header.addEventListener("click", function(e){
+    // The select-all checkbox is inside the options area, not the header.
+    toggleParts();
+  });
+});
 
 
 function selectAllParts(event){
@@ -1851,6 +1851,14 @@ return String(value || "")
    START
 ================================================== */
 
+// Build the Part Name options after the complete DOM is ready.
+// This avoids the custom multi-select becoming empty/non-clickable if the
+// page is loaded or cached in a browser at an unexpected point in parsing.
+document.addEventListener("DOMContentLoaded", function(){
+  createPartOptions();
+  updateSelectedParts();
+});
+
 
 /* ==================================================
    TOOL ASSEMBLY V6
@@ -1996,8 +2004,6 @@ function toggleToolRing(sel){const d=sel.closest(".toolRingPanel").querySelector
 function collectToolAssembly(){const data={assetNumber:document.getElementById("assetNumber").value.trim(),machineType:savedMachineType,toolSteps:selectedToolSteps,components:[]};document.querySelectorAll("#toolStepsContainer .toolStep").forEach(step=>{const fields={};step.querySelectorAll("[data-label]").forEach(el=>fields[el.dataset.label]=el.value||"");data.components.push({step:Number(step.dataset.step),title:step.querySelector("h3").textContent.replace(/^🔹\s*STEP\s*\d+\s*—\s*/i,""),fields});});return data;}
 function reviewToolAssembly(){if(!savedMachineType||!selectedToolSteps){alert("⚠️ Load Machine Type and select Tool Steps first.");return;}const data=collectToolAssembly();const missing=data.components.some(c=>Object.entries(c.fields).some(([k,v])=>String(v).trim()===""&&/Model Number|Component|Type/.test(k)));if(missing){alert("⚠️ Please complete the required tool component fields.");return;}let html=`<div style="font-weight:800;font-size:16px;margin-bottom:8px">🛠 ${escapeHtml(data.toolSteps)}-Step Tool • ${escapeHtml(data.machineType)}</div>`;data.components.forEach(c=>{html+=`<div class="toolReviewCard"><b>STEP ${c.step}</b> — ${escapeHtml(c.title)}${Object.entries(c.fields).filter(([k,v])=>String(v).trim()).map(([k,v])=>`<div class="toolReviewRow"><div><b>${escapeHtml(k)}</b></div><div>${escapeHtml(v)}</div></div>`).join("")}</div>`});document.getElementById("toolReview").innerHTML=html;document.getElementById("toolReview").classList.remove("hidden");document.getElementById("toolReview").scrollIntoView({behavior:"smooth",block:"center"});toolAssemblyData=data;}
 function resetToolAssembly(clearType=true){selectedToolSteps=0;toolAssemblyData=null;document.querySelectorAll(".toolSteps button").forEach(b=>b.classList.remove("active"));document.getElementById("toolStepsContainer").innerHTML="";document.getElementById("toolReview").classList.add("hidden");if(clearType){savedMachineType="";const chooser=document.getElementById("toolTypeChooser");if(chooser)chooser.classList.add("hidden");}}
-
-createPartOptions();
 
 </script>
 
