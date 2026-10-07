@@ -891,10 +891,6 @@ onclick="addChild()">
 
 
 <!-- ==================================================
-     MACHINE TOOLS
-================================================== -->
-
-<!-- ==================================================
      REVIEW BUTTON
 ================================================== -->
 
@@ -1125,6 +1121,7 @@ class="reviewValue">
 <div id="reviewChildrenList"></div>
 
 </div>
+
 
 
 
@@ -1441,8 +1438,6 @@ addChild(child);
 });
 
 }
-
-
 
 /* Existing Asset Status */
 const notice = document.getElementById("existingAssetNotice");
@@ -2368,6 +2363,739 @@ axisSelect.value="";
 
 }
 
+
+/* ==================================================
+   REVIEW MAINTENANCE
+================================================== */
+
+function reviewMaintenance(){
+
+if(
+!currentMachineLoaded
+){
+
+alert(
+"Please load Asset Number first."
+);
+
+return;
+
+}
+
+
+const machineType =
+document.getElementById(
+"machineType"
+).value;
+
+
+if(!machineType){
+
+alert(
+"Please select Machine Type."
+);
+
+return;
+
+}
+
+
+/* Required Common Fields */
+
+const commonFields=[
+"machineName",
+"manufacturer",
+"powerRating",
+"voltage"
+];
+
+
+for(
+const id of commonFields
+){
+
+if(
+!get(id)
+){
+
+alert(
+"Please complete all required machine information."
+);
+
+document.getElementById(
+id
+).focus();
+
+return;
+
+}
+
+}
+
+
+/* CNC Fields */
+
+if(
+machineType==="CNC"
+){
+
+const cncFields=[
+"year",
+"controller",
+"cncControl",
+"serialNumber"
+];
+
+
+for(
+const id of cncFields
+){
+
+if(
+!get(id)
+){
+
+alert(
+"Please complete all required CNC information."
+);
+
+document.getElementById(
+id
+).focus();
+
+return;
+
+}
+
+}
+
+}
+
+
+/* Child Assets */
+
+const childDivs =
+document.querySelectorAll(
+".child"
+);
+
+
+if(
+childDivs.length===0
+){
+
+alert(
+machineType==="CNC"
+?
+"CNC machine requires at least one Child Asset."
+:
+"Conventional machine requires at least one Motor."
+);
+
+return;
+
+}
+
+
+for(
+const div of childDivs
+){
+
+const childType =
+div.querySelector(
+".childType"
+).value;
+
+
+const childName =
+div.querySelector(
+".childName"
+).value;
+
+
+const axis =
+div.querySelector(
+".childAxis"
+).value;
+
+
+if(!childType){
+
+alert(
+"Please select Child Asset Type."
+);
+
+return;
+
+}
+
+
+if(!childName){
+
+alert(
+"Please select Child Asset Name."
+);
+
+return;
+
+}
+
+
+if(
+machineType==="CNC"
+&&
+childName==="Axis"
+&&
+!axis
+){
+
+alert(
+"Please select Axis."
+);
+
+return;
+
+}
+
+}
+
+
+/* ==================================================
+   FILL REVIEW
+================================================== */
+
+setReview(
+"rvAsset",
+get("assetNumber")
+);
+
+setReview(
+"rvType",
+machineType
+);
+
+setReview(
+"rvName",
+get("machineName")
+);
+
+setReview(
+"rvManufacturer",
+get("manufacturer")
+);
+
+setReview(
+"rvYear",
+get("year")
+);
+
+setReview(
+"rvController",
+get("controller")
+);
+
+setReview(
+"rvCnc",
+get("cncControl")
+);
+
+setReview(
+"rvPower",
+get("powerRating")
+);
+
+setReview(
+"rvVoltage",
+get("voltage")
+);
+
+setReview(
+"rvSerial",
+get("serialNumber")
+);
+
+setReview(
+"rvDepartment",
+get("departmentProductionLine")
+);
+
+
+/* CNC review fields */
+
+document.getElementById(
+"rvYearBox"
+).style.display =
+machineType==="CNC"
+?
+"block"
+:
+"none";
+
+
+document.getElementById(
+"rvControllerBox"
+).style.display =
+machineType==="CNC"
+?
+"block"
+:
+"none";
+
+
+document.getElementById(
+"rvCncBox"
+).style.display =
+machineType==="CNC"
+?
+"block"
+:
+"none";
+
+
+document.getElementById(
+"rvSerialBox"
+).style.display =
+machineType==="CNC"
+?
+"block"
+:
+"none";
+
+
+/* ==================================================
+   CHILD REVIEW
+================================================== */
+
+const reviewChildren =
+document.getElementById(
+"reviewChildrenList"
+);
+
+
+reviewChildren.innerHTML="";
+
+
+childDivs.forEach(
+(div,index)=>{
+
+const type =
+div.querySelector(
+".childType"
+).value;
+
+
+const name =
+div.querySelector(
+".childName"
+).value;
+
+
+const axis =
+div.querySelector(
+".childAxis"
+).value;
+
+
+const child =
+document.createElement(
+"div"
+);
+
+
+child.className=
+"reviewChild";
+
+
+let axisHTML="";
+
+
+if(
+axis
+){
+
+axisHTML=`
+
+<div class="reviewChildRow">
+
+<b>Axis:</b>
+${escapeHtml(axis)}
+
+</div>
+
+`;
+
+}
+
+
+child.innerHTML=`
+
+<h3>
+Child Asset ${index+1}
+</h3>
+
+<div class="reviewChildRow">
+
+<b>Child Asset Type:</b>
+${escapeHtml(type)}
+
+</div>
+
+<div class="reviewChildRow">
+
+<b>Child Asset Name:</b>
+${escapeHtml(name)}
+
+</div>
+
+${axisHTML}
+
+`;
+
+
+reviewChildren.appendChild(
+child
+);
+
+});
+
+
+
+/* ==================================================
+   HIDE ENTRY
+================================================== */
+
+document.getElementById(
+"typeCard"
+).classList.add(
+"hidden"
+);
+
+
+document.getElementById(
+"machineCard"
+).classList.add(
+"hidden"
+);
+
+
+document.getElementById(
+"childSection"
+).classList.add(
+"hidden"
+);
+
+
+document.getElementById(
+"saveArea"
+).classList.add(
+"hidden"
+);
+
+
+/* SHOW REVIEW */
+
+document.getElementById(
+"reviewCard"
+).style.display=
+"block";
+
+
+document.getElementById(
+"msg"
+).innerHTML="";
+
+
+window.scrollTo({
+top:0,
+behavior:"smooth"
+});
+
+}
+
+
+/* ==================================================
+   BACK TO EDIT
+================================================== */
+
+function backToMaintenanceEdit(){
+
+document.getElementById(
+"reviewCard"
+).style.display=
+"none";
+
+
+document.getElementById(
+"typeCard"
+).classList.remove(
+"hidden"
+);
+
+
+document.getElementById(
+"machineCard"
+).classList.remove(
+"hidden"
+);
+
+
+document.getElementById(
+"childSection"
+).classList.remove(
+"hidden"
+);
+
+
+document.getElementById(
+"saveArea"
+).classList.remove(
+"hidden"
+);
+
+
+window.scrollTo({
+top:0,
+behavior:"smooth"
+});
+
+}
+
+
+/* ==================================================
+   CONFIRM SAVE
+================================================== */
+
+async function confirmMaintenanceSave(){
+
+const confirmButton =
+document.getElementById(
+"confirmSaveBtn"
+);
+
+
+confirmButton.disabled=true;
+
+confirmButton.innerText=
+"⏳ Saving...";
+
+
+const asset =
+get("assetNumber");
+
+
+const machineType =
+get("machineType");
+
+
+/* Machine Object */
+
+const machine={
+
+machineName:
+get("machineName"),
+
+assetNumber:
+asset,
+
+machineBrand:"",
+
+machineModel:"",
+
+machineType:
+machineType,
+
+manufacturer:
+get("manufacturer"),
+
+year:
+get("year"),
+
+controller:
+get("controller"),
+
+cncControl:
+get("cncControl"),
+
+powerRating:
+get("powerRating"),
+
+voltage:
+get("voltage"),
+
+phase:"",
+
+serialNumber:
+get("serialNumber"),
+
+machineFunction:"",
+
+installationLocation:"",
+
+departmentProductionLine:
+get("departmentProductionLine"),
+
+remarks:""
+
+};
+
+
+/* Child Assets */
+
+const children=[];
+
+
+document
+.querySelectorAll(
+".child"
+)
+.forEach(
+div=>{
+
+const val = selector => div.querySelector(selector)?.value || "";
+children.push({
+  childAssetType: val(".childType"), childAssetName: val(".childName"), axis: val(".childAxis"),
+  brand: val(".childBrand"), model: val(".childModel"), partNumber: val(".childPartNumber"), serialNumber: val(".childSerial"),
+  locationOnMachine: val(".childLocation"), function: val(".childFunction"), condition: val(".childCondition"),
+  powerKw: val(".childPowerKw"), voltageV: val(".childVoltageV"), currentA: val(".childCurrentA"), frequencyHz: val(".childFrequency"),
+  rpm: val(".childRpm"), phase: val(".childPhase"), mountingType: val(".childMounting"), flangeType: val(".childFlange"),
+  driveArrangement: val(".childDriveArrangement"), beltType: val(".childBeltType"), beltNumber: val(".childBeltNumber"),
+  beltManufacturer: val(".childBeltManufacturer"), beltLength: val(".childBeltLength"), beltQuantity: val(".childBeltQuantity"),
+  driverPulley: val(".childDriverPulley"), drivenPulley: val(".childDrivenPulley"), remarks: val(".childRemarks")
+});
+
+});
+
+
+try{
+
+document.getElementById(
+"msg"
+).innerHTML=
+"⏳ Saving machine data...";
+
+
+const result =
+await api({
+
+action:
+"saveMaintenance",
+
+token:
+token,
+
+machine:
+machine,
+
+children:
+children
+
+});
+
+
+console.log(
+"Save Result:",
+result
+);
+
+
+if(result.success){
+
+document.getElementById("msg").innerHTML =
+"✅ " + (result.message || "Machine data saved successfully.");
+
+showToast("✅ Maintenance data saved successfully.");
+
+setTimeout(function(){
+    window.location.reload();
+},1500);
+
+}else{
+
+document.getElementById("msg").innerHTML =
+"❌ " + (result.message || "Save failed.");
+
+}
+
+}catch(error){
+
+console.error(
+"Save Error:",
+error
+);
+
+
+document.getElementById(
+"msg"
+).innerHTML=
+"❌ " +
+(
+error.message ||
+"Connection error."
+);
+
+
+}finally{
+
+confirmButton.disabled=false;
+
+confirmButton.innerText=
+"✅ Confirm & Save";
+
+}
+
+}
+
+
+function showToast(message){
+let t=document.getElementById("mamsToast");
+if(!t){t=document.createElement("div");t.id="mamsToast";t.className="toast";document.body.appendChild(t);}
+t.textContent=message;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1300);
+}
+
+/* ==================================================
+   GET VALUE
+================================================== */
+
+function get(id){
+
+const element =
+document.getElementById(
+id
+);
+
+
+return element
+?
+element.value.trim()
+:
+"";
+
+}
+
+
+/* ==================================================
+   SET VALUE
+================================================== */
+
+function setVal(
+id,
+value
+){
+
+const element =
+document.getElementById(
+id
+);
+
+
+if(element){
+
+element.value =
+value || "";
+
+}
+
+}
 
 
 /* ==================================================
