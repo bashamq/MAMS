@@ -976,6 +976,22 @@ id="rCT">
 style="margin-top:15px">
 
 <div class="summaryLabel">
+🛠 Tool Assembly
+</div>
+
+<div
+class="summaryValue"
+id="rTool">
+No Tool Assembly Added
+</div>
+
+</div>
+
+
+<div class="summaryItem"
+style="margin-top:15px">
+
+<div class="summaryLabel">
 📝 Remarks
 </div>
 
@@ -1544,6 +1560,25 @@ span.innerText=part;
 partsBox.appendChild(span);
 
 });
+
+
+/* Tool Assembly */
+
+const toolBox = document.getElementById("rTool");
+if(toolAssemblyData && toolAssemblyData.components && toolAssemblyData.components.length){
+  let toolText = `${toolAssemblyData.machineType} • ${toolAssemblyData.toolSteps}-Step Tool`;
+  toolAssemblyData.components.forEach(c => {
+    const filled = Object.entries(c.fields || {})
+      .filter(([k,v]) => String(v).trim())
+      .map(([k,v]) => `${k}: ${v}`);
+    toolText += `\nSTEP ${c.step} — ${c.title}`;
+    if(filled.length) toolText += `\n${filled.join(" | ")}`;
+  });
+  toolBox.innerText = toolText;
+  toolBox.style.whiteSpace = "pre-line";
+} else {
+  toolBox.innerText = "No Tool Assembly Added";
+}
 
 
 /* Remarks */
