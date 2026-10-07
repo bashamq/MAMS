@@ -387,7 +387,39 @@ button{min-height:44px}
 .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);opacity:0;z-index:9999;pointer-events:none;padding:14px 20px;border-radius:14px;background:#0f172a;color:#fff;box-shadow:0 12px 35px rgba(0,0,0,.25);font-weight:700;transition:.25s}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 @media(max-width:600px){.container{padding:12px!important}.header{padding:20px 14px!important}.header h1{font-size:22px!important}.card,.section{padding:16px!important}button{min-height:46px}}
-.machineTypeBadge{display:inline-block;margin-left:6px;padding:5px 10px;border-radius:999px;background:#e2e8f0;color:#334155;font-size:12px;font-weight:800}.machineTypeBadge.cnc{background:#dbeafe;color:#1d4ed8}.machineTypeBadge.conventional{background:#fef3c7;color:#92400e}.toolAssembly{border:1px solid #cbd5e1;border-left:5px solid #0f766e;border-radius:14px;padding:15px;margin-top:12px;background:#fbfdff;position:relative}.toolAssembly h3{margin:0 0 12px}.toolGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.toolGrid label{font-size:12px;font-weight:800;display:block;margin-bottom:5px}.toolGrid input,.toolGrid select{width:100%;min-height:42px;border:1px solid #cbd5e1;border-radius:9px;padding:9px;box-sizing:border-box}.toolStep{border:1px dashed #cbd5e1;border-radius:10px;padding:12px;margin-top:10px;background:#fff}.toolStepTitle{font-weight:800;margin-bottom:9px;color:#334155}.toolSubPanel{margin-top:10px;padding:10px;border:1px dashed #0f766e;border-radius:10px;background:#f0fdfa}.toolRemove{position:absolute;right:10px;top:10px;background:#dc2626;color:#fff;border:0;border-radius:8px;padding:6px 9px;min-height:34px}.toolAdd{background:#2563eb;color:#fff;border:0;border-radius:10px;padding:11px 16px;font-weight:800;margin-top:12px}@media(max-width:900px){.toolGrid{grid-template-columns:1fr 1fr}}@media(max-width:600px){.toolGrid{grid-template-columns:1fr}}
+
+
+/* ================= TOOL ASSEMBLY V6 ================= */
+.toolAssemblyCard{border:1px solid #cfe0ef;background:linear-gradient(180deg,#fff,#f8fbff)}
+ .toolInfo{padding:12px;border-radius:10px;background:#eef8ff;border:1px solid #b9ddf7;margin-bottom:12px;font-weight:700}
+.toolTypeChooser{margin:10px 0 14px;padding:14px;border:1px solid #f1cf72;border-radius:12px;background:#fff9e8}
+.toolTypeChooser h4{margin:0 0 8px;color:#8a5a00}
+.toolTypeOptions{display:flex;gap:10px;flex-wrap:wrap}
+.toolTypeOption{display:flex;align-items:center;gap:8px;padding:10px 14px;background:#fff;border:1px solid #d8dee8;border-radius:10px;font-weight:800;cursor:pointer}
+.toolTypeOption input{width:18px;height:18px}
+.toolTypeConfirm{border:0;border-radius:10px;padding:10px 15px;background:#1769aa;color:#fff;font-weight:800;cursor:pointer;margin-top:10px}
+
+.toolHint{font-size:13px;color:#64748b;margin:10px 0}
+.toolSteps{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:12px 0}
+.toolSteps button{border:1px solid #cbd5e1;background:#fff;border-radius:10px;padding:12px;font-weight:800;cursor:pointer}
+.toolSteps button.active{background:#1769aa;color:#fff;border-color:#1769aa}
+.toolStep{border-left:5px solid #0f8b8d;background:#fbfdff;border-radius:12px;padding:15px;margin-top:12px}
+.toolStep h3{margin:0 0 12px;color:#0d557f}
+.toolGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.toolField label{font-size:13px}
+.toolComponentPanel,.toolRingPanel{margin-top:12px;padding:12px;border:1px dashed #9bb7c8;border-radius:10px;background:#f7fbfd}
+.toolRingPanel{border-color:#0f8b8d;background:#f0f8f7}
+.toolRingPanel h4{margin:0 0 10px;color:#08756f}
+.toolReview{margin-top:15px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px}
+.toolReviewCard{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:12px;margin:8px 0}
+.toolReviewRow{display:grid;grid-template-columns:180px 1fr;gap:8px;padding:6px 0;border-bottom:1px solid #edf2f7}
+.toolReviewRow:last-child{border-bottom:0}
+.toolActions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.toolReviewBtn,.toolResetBtn{border:0;border-radius:10px;padding:12px 16px;font-weight:800;cursor:pointer;color:#fff}
+.toolReviewBtn{background:#1769aa}.toolResetBtn{background:#667085}
+.toolAssemblyCard .hidden{display:none!important}
+@media(max-width:650px){.toolSteps{grid-template-columns:repeat(2,1fr)}.toolGrid{grid-template-columns:1fr}.toolReviewRow{grid-template-columns:1fr}}
+@media(max-width:430px){.toolSteps{grid-template-columns:1fr}}
 
 </style>
 
@@ -443,13 +475,7 @@ Asset Number
 
 <input
 id="assetNumber"
-placeholder="Enter machine asset number"
-onblur="loadMachineType()">
-
-<div style="margin-top:9px">
-  <span style="font-size:12px;color:#64748b">Machine Type</span>
-  <span id="machineTypeBadge" class="machineTypeBadge">Not Loaded</span>
-</div>
+placeholder="Enter machine asset number">
 
 </div>
 
@@ -713,15 +739,32 @@ below.
 
 
 <!-- ==================================================
-     MACHINE TOOLS
+     MACHINE TOOL ASSEMBLY V6
 ================================================== -->
-<div class="card" id="machineToolsSection" style="margin-top:18px">
-  <h2>🛠 Machine Tools</h2>
-  <p style="color:#64748b;font-size:13px;margin-top:-6px">Select 3, 4 or 5 steps. One complete assembly is saved as one tool.</p>
-  <div id="tools"></div>
-  <div style="display:flex;gap:10px;align-items:end;flex-wrap:wrap;margin-top:12px">
-    <div style="min-width:190px;flex:1"><label style="font-size:12px;font-weight:800;display:block;margin-bottom:5px">Number of Tool Steps</label><select id="toolStepsSelect" style="width:100%;min-height:44px;border:1px solid #cbd5e1;border-radius:9px;padding:9px"><option value="3">3 Step Tool</option><option value="4">4 Step Tool</option><option value="5">5 Step Tool</option></select></div>
-    <button type="button" class="toolAdd" onclick="addToolAssembly()">➕ Add Complete Tool</button>
+<div class="card toolAssemblyCard" id="toolAssemblyCard" style="margin-top:20px">
+  <h2>🛠 Machine Tool Assembly</h2>
+  <div id="toolMachineInfo" class="toolInfo">Enter Asset Number and load the saved machine record to enable tool configuration.</div>
+  <div id="toolTypeChooser" class="toolTypeChooser hidden">
+    <h4>⚠️ Machine Type is not registered for this Asset Number</h4>
+    <div>Please select the machine type here so Production Entry can continue. You can complete the full Machine / Maintenance registration later.</div>
+    <div class="toolTypeOptions">
+      <label class="toolTypeOption"><input type="radio" name="productionMachineType" value="CNC"> CNC</label>
+      <label class="toolTypeOption"><input type="radio" name="productionMachineType" value="Conventional"> Conventional</label>
+    </div>
+    <button type="button" class="toolTypeConfirm" onclick="confirmProductionMachineType()">Continue with Selected Type</button>
+  </div>
+  <div class="toolSteps">
+    <button type="button" data-tool-steps="2" onclick="buildToolAssembly(2,this)">2 Step Tool</button>
+    <button type="button" data-tool-steps="3" onclick="buildToolAssembly(3,this)">3 Step Tool</button>
+    <button type="button" data-tool-steps="4" onclick="buildToolAssembly(4,this)">4 Step Tool</button>
+    <button type="button" data-tool-steps="5" onclick="buildToolAssembly(5,this)">5 Step Tool</button>
+  </div>
+  <div id="toolAssemblyHint" class="toolHint">Machine Type is loaded automatically from Maintenance / Machine Master. It cannot be entered manually.</div>
+  <div id="toolStepsContainer"></div>
+  <div id="toolReview" class="toolReview hidden"></div>
+  <div class="toolActions">
+    <button type="button" class="toolReviewBtn" onclick="reviewToolAssembly()">👁️ Review Tool</button>
+    <button type="button" class="toolResetBtn" onclick="resetToolAssembly()">↺ Reset Tool</button>
   </div>
 </div>
 
@@ -894,11 +937,6 @@ id="rCT">
 
 </div>
 
-
-<div class="summaryItem" style="margin-top:15px">
-<div class="summaryLabel">🛠 Machine Tools</div>
-<div id="rTools" class="summaryValue">No tools added</div>
-</div>
 
 <div class="summaryItem"
 style="margin-top:15px">
@@ -1286,114 +1324,6 @@ document.getElementById(
 );
 
 
-
-/* ==================================================
-   MACHINE TYPE + MACHINE TOOLS
-================================================== */
-
-async function loadMachineType(){
-  const asset=document.getElementById("assetNumber").value.trim();
-  const badge=document.getElementById("machineTypeBadge");
-  if(!asset) return;
-  badge.innerText="Loading..."; badge.className="machineTypeBadge";
-  try{
-    const result=await api({action:"getMachineType",token:token,assetNumber:asset});
-    if(!result.success || !result.machineType) throw new Error(result.message||"Machine Type not found.");
-    machineType=result.machineType;
-    badge.innerText=machineType;
-    badge.className="machineTypeBadge "+(machineType==="CNC"?"cnc":"conventional");
-  }catch(e){
-    machineType="";
-    badge.innerText="Not Found";
-    badge.className="machineTypeBadge";
-    alert("⚠️ "+e.message+"\n\nPlease complete the machine/maintenance registration first.");
-  }
-}
-
-let machineType="";
-let toolCounter=0;
-
-function addToolAssembly(){
-  if(!machineType){
-    alert("⚠️ Enter a valid Asset Number first. Machine Type must be loaded from saved machine data.");
-    return;
-  }
-  const steps=document.getElementById("toolStepsSelect").value;
-  if(!["3","4","5"].includes(String(steps))){
-    alert("Please select 3, 4 or 5 steps."); return;
-  }
-  toolCounter++;
-  const div=document.createElement("div");
-  div.className="toolAssembly";
-  div.dataset.steps=steps;
-  div.dataset.toolNo=toolCounter;
-  div.innerHTML=`<button type="button" class="toolRemove" onclick="this.parentElement.remove()">✖</button>
-  <h3>🔧 Complete Tool ${toolCounter} — ${steps} Steps</h3>
-  <div class="toolGrid" style="margin-bottom:10px">
-    <div><label>Tool Number</label><input class="assemblyToolNumber" placeholder="e.g. T01"></div>
-    <div><label>Tool Name</label><input class="assemblyToolName" placeholder="e.g. 20mm Drill Tool"></div>
-    <div><label>Quantity</label><input class="assemblyQuantity" type="number" min="1" value="1"></div>
-  </div>
-  <div class="assemblySteps">${buildToolSteps(Number(steps))}</div>`;
-  document.getElementById("tools").appendChild(div);
-}
-
-function buildToolSteps(count){
-  let html="";
-  for(let i=1;i<=count;i++){
-    const last=i===count;
-    let title=last?"Cutting Tool / Insert":"Component";
-    if(i===1) title="Holder";
-    html+=`<div class="toolStep"><div class="toolStepTitle">STEP ${i} — ${title}</div>${toolStepFields(i,last)}</div>`;
-  }
-  return html;
-}
-
-function toolStepFields(i,last){
-  if(i===1) return `<div class="toolGrid"><div><label>Holder Model Number</label><input class="sModel" placeholder="e.g. BT50"></div><div><label>Holder Size / Specification</label><input class="sSize"></div></div>`;
-  if(last){
-    return `<div class="toolGrid">
-      <div><label>Cutting Tool Type</label><select class="sType"><option value="">Select</option><option>Cutting Insert</option><option>Drill</option><option>Tap</option><option>Reamer</option><option>Countersink</option><option>Drill Insert</option><option>Boring Insert</option><option>Other</option></select></div>
-      <div><label>Model / Grade</label><input class="sModel"></div><div><label>Size</label><input class="sSize"></div>
-      <div><label>Material</label><select class="sMaterial"><option value="">Select</option><option>Carbide</option><option>HSS</option><option>Other</option></select></div>
-    </div>`;
-  }
-  let options=machineType==="CNC"
-    ? `<option>Clamping Collet</option><option>Drill</option><option>Reamer</option><option>Tap</option><option>Boring Holder</option><option>Boring Head Holder</option><option>Boring Head Holder with Chanfring Ring</option><option>Boring Head</option><option>Extension</option><option>Sleeve Holder</option><option>Other</option>`
-    : `<option>Sleeve Holder</option><option>Drill</option><option>Tap</option><option>Reamer</option><option>Countersink</option><option>Other</option>`;
-  return `<div class="toolGrid"><div><label>Component Type</label><select class="sType" onchange="toolComponentChanged(this)"><option value="">Select</option>${options}</select></div>
-    <div><label>Model Number</label><input class="sModel"></div><div><label>Size</label><input class="sSize"></div><div><label>Specification</label><input class="sSpec"></div></div>
-    <div class="toolSubPanel chanfringPanel hidden"><b>🔩 Chanfring Ring</b><div class="toolGrid" style="margin-top:8px"><div><label>Chanfring Ring</label><select class="ringYesNo" onchange="ringChanged(this)"><option value="">Select</option><option>Yes</option><option>No</option></select></div><div><label>Rod Diameter</label><input class="ringRodDia"></div><div><label>Ring Model Number</label><input class="ringModel"></div><div><label>Ring Size</label><input class="ringSize"></div></div><div class="toolGrid" style="margin-top:8px"><div><label>Chanfring Ring Cutting Insert</label><select class="ringInsertYesNo"><option value="">Select</option><option>Yes</option><option>No</option></select></div><div><label>Insert Model / Grade</label><input class="ringInsertModel"></div><div><label>Insert Size</label><input class="ringInsertSize"></div></div></div>`;
-}
-
-function toolComponentChanged(sel){
-  const panel=sel.closest(".toolStep").querySelector(".chanfringPanel");
-  if(panel) panel.classList.toggle("hidden",sel.value!=="Boring Head Holder with Chanfring Ring");
-}
-function ringChanged(sel){
-  const p=sel.closest(".chanfringPanel");
-  const fields=p.querySelectorAll(".ringRodDia,.ringModel,.ringSize,.ringInsertYesNo,.ringInsertModel,.ringInsertSize");
-  fields.forEach(x=>{x.disabled=sel.value!=="Yes"; if(sel.value!=="Yes") x.value="";});
-}
-
-function collectTools(){
-  return Array.from(document.querySelectorAll("#tools .toolAssembly")).map(div=>{
-    const val=s=>div.querySelector(s)?.value||"";
-    const components=Array.from(div.querySelectorAll(".toolStep")).map((step,idx)=>({
-      step:idx+1,type:valStep(step,".sType"),model:valStep(step,".sModel"),size:valStep(step,".sSize"),material:valStep(step,".sMaterial"),specification:valStep(step,".sSpec"),
-      chanfringRing:valStep(step,".ringYesNo"),rodDiameter:valStep(step,".ringRodDia"),ringModel:valStep(step,".ringModel"),ringSize:valStep(step,".ringSize"),ringCuttingInsert:valStep(step,".ringInsertYesNo"),ringInsertModel:valStep(step,".ringInsertModel"),ringInsertSize:valStep(step,".ringInsertSize")
-    }));
-    return {toolNumber:val(".assemblyToolNumber"),toolName:val(".assemblyToolName"),quantity:val(".assemblyQuantity"),machineType:machineType,toolSteps:div.dataset.steps,components:components};
-  });
-}
-function valStep(step,selector){return step.querySelector(selector)?.value||"";}
-function renderToolReview(){
-  const box=document.getElementById("rTools"),tools=collectTools();
-  if(!tools.length){box.innerText="No tools added";return;}
-  box.innerHTML=tools.map((t,i)=>`<div style="margin-bottom:10px"><b>Tool ${i+1}</b> — ${escapeHtml(t.toolName||"Complete Tool")} (${t.toolSteps} Steps)<br>${t.components.map(c=>`Step ${c.step}: ${escapeHtml(c.type||"Holder/Component")} ${c.model?"• "+escapeHtml(c.model):""} ${c.size?"• "+escapeHtml(c.size):""}`).join("<br>")}</div>`).join("");
-}
-function escapeHtml(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
-
 /* ==================================================
    REVIEW DATA
 ================================================== */
@@ -1682,7 +1612,7 @@ document.getElementById(
 "remarks"
 ).value.trim(),
 
-tools: collectTools()
+toolAssembly: toolAssemblyData || null
 
 };
 
@@ -1827,6 +1757,117 @@ return String(value || "")
 /* ==================================================
    START
 ================================================== */
+
+
+/* ==================================================
+   TOOL ASSEMBLY V6
+================================================== */
+let savedMachineType="";
+let selectedToolSteps=0;
+let toolAssemblyData=null;
+
+const CNC_TOOL_STEPS={
+  2:["Holder","Cutting Tool / Insert"],
+  3:["Holder","Select Component","Cutting Tool / Insert"],
+  4:["Holder","Select Component","Select Next Component","Cutting Tool / Insert"],
+  5:["Holder","Select Component","Select Next Component","Select Next Component","Cutting Tool / Insert"]
+};
+const MANUAL_TOOL_STEPS={
+  2:["Holder","Cutting Tool / Insert"],
+  3:["Holder","Sleeve Holder","Drill / Tap / Reamer / Countersink"],
+  4:["Holder","Sleeve Holder","Intermediate Component","Drill / Tap / Reamer / Countersink"],
+  5:["Holder","Sleeve Holder","Intermediate Component","Extension / Intermediate","Drill / Tap / Reamer / Countersink"]
+};
+
+async function loadProductionMachineType(){
+  const asset=document.getElementById("assetNumber").value.trim();
+  const box=document.getElementById("toolMachineInfo");
+  const chooser=document.getElementById("toolTypeChooser");
+  if(!asset){
+    savedMachineType="";
+    chooser.classList.add("hidden");
+    box.className="toolInfo";
+    box.textContent="Enter Asset Number first.";
+    resetToolAssembly();
+    return;
+  }
+  try{
+    box.textContent="🔎 Loading saved machine type...";
+    const result=await api({action:"getMachineType",token:token,assetNumber:asset});
+    if(!result.success) throw new Error(result.message||"Unable to load machine information.");
+
+    savedMachineType=String(result.machineType||"").trim();
+
+    if(result.needsSelection || !savedMachineType){
+      chooser.classList.remove("hidden");
+      box.className="toolInfo";
+      box.textContent="⚠️ No saved Machine Type found. Select CNC or Conventional below to continue.";
+      resetToolAssembly(false);
+      return;
+    }
+
+    chooser.classList.add("hidden");
+    box.innerHTML="✅ Saved Machine Type: <b>"+escapeHtml(savedMachineType)+"</b> — tool configuration is ready.";
+    if(selectedToolSteps){
+      const active=document.querySelector(".toolSteps button.active");
+      buildToolAssembly(selectedToolSteps,active);
+    }
+  }catch(e){
+    savedMachineType="";
+    chooser.classList.add("hidden");
+    box.textContent="❌ "+(e.message||"Machine information could not be loaded.");
+    resetToolAssembly();
+  }
+}
+
+function confirmProductionMachineType(){
+  const selected=document.querySelector('input[name="productionMachineType"]:checked');
+  const box=document.getElementById("toolMachineInfo");
+  const chooser=document.getElementById("toolTypeChooser");
+  if(!selected){
+    alert("⚠️ Please select CNC or Conventional.");
+    return;
+  }
+  savedMachineType=selected.value;
+  chooser.classList.add("hidden");
+  box.innerHTML="⚠️ Machine is not registered yet. Using selected type: <b>"+escapeHtml(savedMachineType)+"</b> for this Production Tool Entry.";
+  box.className="toolInfo";
+  document.getElementById("toolAssemblyHint").textContent=savedMachineType+" configuration • Machine registration can be completed later";
+}
+
+document.getElementById("assetNumber").addEventListener("blur",loadProductionMachineType);
+document.getElementById("assetNumber").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();loadProductionMachineType();}});
+
+function buildToolAssembly(n,btn){
+  if(!savedMachineType){alert("⚠️ Please load a saved Machine Type first. Complete Maintenance / Machine Registration if it is missing.");return;}
+  selectedToolSteps=n;
+  document.querySelectorAll(".toolSteps button").forEach(b=>b.classList.remove("active"));
+  if(btn) btn.classList.add("active");
+  const isCnc=savedMachineType.toLowerCase()==="cnc";
+  const list=(isCnc?CNC_TOOL_STEPS:MANUAL_TOOL_STEPS)[n];
+  document.getElementById("toolAssemblyHint").textContent=savedMachineType+" configuration • "+n+"-step complete tool assembly";
+  document.getElementById("toolStepsContainer").innerHTML=list.map((title,i)=>renderToolStep(i+1,title)).join("");
+  document.getElementById("toolReview").classList.add("hidden");
+}
+
+function renderToolStep(n,title){
+  let body="";
+  if(title==="Holder") body=`<div class="toolGrid"><div class="toolField"><label>Holder Model Number *</label><input data-label="Holder Model Number" placeholder="e.g. BT50-HOLDER"></div><div class="toolField"><label>Holder Size / Specification</label><input data-label="Holder Size / Specification"></div><div class="toolField"><label>Manufacturer</label><input data-label="Manufacturer"></div><div class="toolField"><label>Part Number</label><input data-label="Part Number"></div></div>`;
+  else if(title==="Sleeve Holder") body=`<div class="toolGrid"><div class="toolField"><label>Sleeve Holder Model Number *</label><input data-label="Sleeve Holder Model Number"></div><div class="toolField"><label>Size</label><input data-label="Size"></div><div class="toolField"><label>Manufacturer</label><input data-label="Manufacturer"></div><div class="toolField"><label>Specification</label><input data-label="Specification"></div></div>`;
+  else if(title==="Cutting Tool / Insert") body=`<div class="toolGrid"><div class="toolField"><label>Cutting Tool / Insert Type *</label><select data-label="Cutting Tool / Insert Type"><option value="">Select</option><option>Cutting Insert</option><option>Drill Insert</option><option>Boring Insert</option><option>Chamfering Insert</option><option>Other Insert</option></select></div><div class="toolField"><label>Size</label><input data-label="Size"></div><div class="toolField"><label>Material</label><select data-label="Material"><option value="">Select</option><option>Carbide</option><option>HSS</option><option>PCD</option><option>CBN</option><option>Other</option></select></div><div class="toolField"><label>Model / Grade</label><input data-label="Model / Grade"></div><div class="toolField"><label>Manufacturer</label><input data-label="Manufacturer"></div><div class="toolField"><label>Remarks</label><input data-label="Remarks"></div></div>`;
+  else if(title==="Drill / Tap / Reamer / Countersink") body=`<div class="toolGrid"><div class="toolField"><label>Tool Type *</label><select data-label="Tool Type"><option value="">Select</option><option>Drill</option><option>Tap</option><option>Reamer</option><option>Countersink</option></select></div><div class="toolField"><label>Size</label><input data-label="Size"></div><div class="toolField"><label>Material</label><select data-label="Material"><option value="">Select</option><option>Carbide</option><option>HSS</option><option>Other</option></select></div><div class="toolField"><label>Model Number</label><input data-label="Model Number"></div></div>`;
+  else body=toolComponentChooser();
+  return `<div class="toolStep" data-step="${n}"><h3>🔹 STEP ${n} — ${escapeHtml(title)}</h3>${body}</div>`;
+}
+
+function toolComponentChooser(){
+  return `<div class="toolGrid"><div class="toolField"><label>Component *</label><select class="toolComponentSelect" data-label="Component" onchange="toolComponentChanged(this)"><option value="">Select Component</option><option>Clamping Collet</option><option>Drill</option><option>Reamer</option><option>Tap</option><option>Boring Holder</option><option>Boring Head Holder</option><option>Boring Head Holder with Chanfring Ring</option><option>Boring Head</option><option>Extension</option><option>Sleeve Holder</option><option>Other</option></select></div><div class="toolField"><label>Model Number</label><input data-label="Model Number"></div><div class="toolField"><label>Size</label><input data-label="Size"></div><div class="toolField"><label>Specification</label><input data-label="Specification"></div></div><div class="toolRingPanel hidden"><h4>🔩 Chanfring Ring Details</h4><div class="toolGrid"><div class="toolField"><label>Chanfring Ring</label><select data-label="Chanfring Ring" onchange="toggleToolRing(this)"><option value="">Select</option><option>Yes</option><option>No</option></select></div><div class="toolField"><label>Rod Diameter</label><input data-label="Rod Diameter"></div></div><div class="toolRingDetails hidden"><div class="toolGrid" style="margin-top:10px"><div class="toolField"><label>Chanfring Ring Model Number</label><input data-label="Chanfring Ring Model Number"></div><div class="toolField"><label>Chanfring Ring Size</label><input data-label="Chanfring Ring Size"></div><div class="toolField"><label>Chanfring Ring Cutting Insert</label><select data-label="Chanfring Ring Cutting Insert"><option value="">Select</option><option>Yes</option><option>No</option></select></div><div class="toolField"><label>Cutting Insert Model / Grade</label><input data-label="Cutting Insert Model / Grade"></div><div class="toolField"><label>Cutting Insert Size</label><input data-label="Cutting Insert Size"></div></div></div></div>`;
+}
+function toolComponentChanged(sel){const step=sel.closest(".toolStep");const panel=step.querySelector(".toolRingPanel");if(!panel)return;panel.classList.toggle("hidden",sel.value!=="Boring Head Holder with Chanfring Ring");}
+function toggleToolRing(sel){const d=sel.closest(".toolRingPanel").querySelector(".toolRingDetails");if(d)d.classList.toggle("hidden",sel.value!=="Yes");}
+function collectToolAssembly(){const data={assetNumber:document.getElementById("assetNumber").value.trim(),machineType:savedMachineType,toolSteps:selectedToolSteps,components:[]};document.querySelectorAll("#toolStepsContainer .toolStep").forEach(step=>{const fields={};step.querySelectorAll("[data-label]").forEach(el=>fields[el.dataset.label]=el.value||"");data.components.push({step:Number(step.dataset.step),title:step.querySelector("h3").textContent.replace(/^🔹\s*STEP\s*\d+\s*—\s*/i,""),fields});});return data;}
+function reviewToolAssembly(){if(!savedMachineType||!selectedToolSteps){alert("⚠️ Load Machine Type and select Tool Steps first.");return;}const data=collectToolAssembly();const missing=data.components.some(c=>Object.entries(c.fields).some(([k,v])=>String(v).trim()===""&&/Model Number|Component|Type/.test(k)));if(missing){alert("⚠️ Please complete the required tool component fields.");return;}let html=`<div style="font-weight:800;font-size:16px;margin-bottom:8px">🛠 ${escapeHtml(data.toolSteps)}-Step Tool • ${escapeHtml(data.machineType)}</div>`;data.components.forEach(c=>{html+=`<div class="toolReviewCard"><b>STEP ${c.step}</b> — ${escapeHtml(c.title)}${Object.entries(c.fields).filter(([k,v])=>String(v).trim()).map(([k,v])=>`<div class="toolReviewRow"><div><b>${escapeHtml(k)}</b></div><div>${escapeHtml(v)}</div></div>`).join("")}</div>`});document.getElementById("toolReview").innerHTML=html;document.getElementById("toolReview").classList.remove("hidden");document.getElementById("toolReview").scrollIntoView({behavior:"smooth",block:"center"});toolAssemblyData=data;}
+function resetToolAssembly(clearType=true){selectedToolSteps=0;toolAssemblyData=null;document.querySelectorAll(".toolSteps button").forEach(b=>b.classList.remove("active"));document.getElementById("toolStepsContainer").innerHTML="";document.getElementById("toolReview").classList.add("hidden");if(clearType){savedMachineType="";const chooser=document.getElementById("toolTypeChooser");if(chooser)chooser.classList.add("hidden");}}
 
 createPartOptions();
 
