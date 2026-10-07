@@ -2016,39 +2016,40 @@ Z Axis
 </div>
 
 <div class="techPanel">
-  <h4>Technical Details</h4>
+  <h4>Child Asset Technical Details</h4>
   <div class="techGrid">
     <div><label>Manufacturer</label><input class="childBrand" placeholder="Manufacturer"></div>
     <div><label>Model Number</label><input class="childModel" placeholder="Model Number"></div>
-    <div><label>Part Number</label><input class="childPartNumber" placeholder="Part Number"></div>
-    <div><label>Serial Number</label><input class="childSerial" placeholder="Serial Number"></div>
-    <div><label>Location on Machine</label><input class="childLocation" placeholder="e.g. X Axis Cabinet"></div>
-    <div><label>Function</label><input class="childFunction" placeholder="Function"></div>
-    <div><label>Condition</label><input class="childCondition" placeholder="Condition"></div>
-    <div><label>Power (kW)</label><input class="childPowerKw" placeholder="e.g. 15"></div>
-    <div><label>Voltage (V)</label><input class="childVoltageV" placeholder="e.g. 400"></div>
-    <div><label>Current (A)</label><input class="childCurrentA" placeholder="e.g. 28"></div>
-    <div><label>Frequency (Hz)</label><input class="childFrequency" placeholder="e.g. 50"></div>
-    <div><label>RPM</label><input class="childRpm" placeholder="e.g. 3000"></div>
-    <div><label>Phase</label><input class="childPhase" placeholder="e.g. 3"></div>
-    <div><label>Mounting Type</label><input class="childMounting" placeholder="Mounting Type"></div>
-    <div><label>Flange Type</label><input class="childFlange" placeholder="e.g. B5"></div>
-    <div><label>Drive Arrangement</label><select class="childDriveArrangement" onchange="childDriveChanged(this)"><option value="">Select</option><option>Direct Drive</option><option>Flange Mounted</option><option>Belt Drive</option><option>Gear Drive</option><option>Chain Drive</option><option>Coupling Drive</option><option>Other</option></select></div>
+    <div><label>Condition</label><select class="childCondition">
+      <option value="">Select Condition</option>
+      <option>New</option><option>Good</option><option>Fair</option><option>Poor</option><option>Critical</option>
+    </select></div>
+    <div><label>Power (kW)</label><input class="childPowerKw" type="number" step="any" placeholder="e.g. 15"></div>
+    <div><label>Voltage (V)</label><input class="childVoltageV" type="number" step="any" placeholder="e.g. 400"></div>
+    <div><label>Current (A)</label><input class="childCurrentA" type="number" step="any" placeholder="e.g. 28"></div>
+    <div><label>RPM</label><input class="childRpm" type="number" step="any" placeholder="e.g. 3000"></div>
+    <div><label>Phase</label><select class="childPhase">
+      <option value="">Select Phase</option><option>1 Phase</option><option>3 Phase</option><option>DC</option><option>N/A</option>
+    </select></div>
+    <div><label>Mounting Type</label><select class="childMounting">
+      <option value="">Select Mounting Type</option><option>Foot Mounted</option><option>Flange Mounted</option><option>Face Mounted</option><option>Base Mounted</option><option>Vertical Mounted</option><option>Horizontal Mounted</option><option>Other</option>
+    </select></div>
+    <div><label>Drive Arrangement</label><select class="childDriveArrangement" onchange="childDriveChanged(this)">
+      <option value="">Select Drive Arrangement</option><option>Direct Drive</option><option>Flange Mounted</option><option>Belt Drive</option><option>Gear Drive</option><option>Chain Drive</option><option>Coupling Drive</option><option>Other</option>
+    </select></div>
   </div>
   <div class="beltPanel hidden">
     <div class="subTitle">Belt Details</div>
     <div class="techGrid">
       <div><label>Belt Type</label><input class="childBeltType" placeholder="e.g. V-Belt"></div>
-      <div><label>Belt Number</label><input class="childBeltNumber" placeholder="e.g. SPA-1250"></div>
+      <div><label>Belt Number / Size</label><input class="childBeltNumber" placeholder="e.g. SPA-1250"></div>
       <div><label>Belt Manufacturer</label><input class="childBeltManufacturer" placeholder="Manufacturer"></div>
       <div><label>Belt Length</label><input class="childBeltLength" placeholder="Length"></div>
-      <div><label>Belt Quantity</label><input class="childBeltQuantity" placeholder="Quantity"></div>
-      <div><label>Driver Pulley</label><input class="childDriverPulley" placeholder="Size / Type"></div>
-      <div><label>Driven Pulley</label><input class="childDrivenPulley" placeholder="Size / Type"></div>
+      <div><label>Belt Quantity</label><input class="childBeltQuantity" type="number" min="1" step="1" placeholder="Quantity"></div>
     </div>
   </div>
-  <div style="margin-top:10px"><label>Remarks</label><input class="childRemarks" placeholder="Component remarks"></div>
 </div>
+
 
 `;
 
@@ -2075,18 +2076,21 @@ function setField_(div, selector, value){
 }
 
 function populateChildDetails(div, data={}){
-  setField_(div,".childBrand",data.brand); setField_(div,".childModel",data.model);
-  setField_(div,".childPartNumber",data.partNumber); setField_(div,".childSerial",data.serialNumber);
-  setField_(div,".childLocation",data.locationOnMachine); setField_(div,".childFunction",data.function);
-  setField_(div,".childCondition",data.condition); setField_(div,".childPowerKw",data.powerKw);
-  setField_(div,".childVoltageV",data.voltageV || data.voltage); setField_(div,".childCurrentA",data.currentA || data.current);
-  setField_(div,".childFrequency",data.frequencyHz); setField_(div,".childRpm",data.rpm); setField_(div,".childPhase",data.phase);
-  setField_(div,".childMounting",data.mountingType); setField_(div,".childFlange",data.flangeType);
-  setField_(div,".childDriveArrangement",data.driveArrangement); setField_(div,".childBeltType",data.beltType);
-  setField_(div,".childBeltNumber",data.beltNumber); setField_(div,".childBeltManufacturer",data.beltManufacturer);
-  setField_(div,".childBeltLength",data.beltLength); setField_(div,".childBeltQuantity",data.beltQuantity);
-  setField_(div,".childDriverPulley",data.driverPulley); setField_(div,".childDrivenPulley",data.drivenPulley);
-  setField_(div,".childRemarks",data.remarks);
+  setField_(div,".childBrand",data.brand);
+  setField_(div,".childModel",data.model);
+  setField_(div,".childCondition",data.condition);
+  setField_(div,".childPowerKw",data.powerKw);
+  setField_(div,".childVoltageV",data.voltageV || data.voltage);
+  setField_(div,".childCurrentA",data.currentA || data.current);
+  setField_(div,".childRpm",data.rpm);
+  setField_(div,".childPhase",data.phase);
+  setField_(div,".childMounting",data.mountingType);
+  setField_(div,".childDriveArrangement",data.driveArrangement);
+  setField_(div,".childBeltType",data.beltType);
+  setField_(div,".childBeltNumber",data.beltNumber);
+  setField_(div,".childBeltManufacturer",data.beltManufacturer);
+  setField_(div,".childBeltLength",data.beltLength);
+  setField_(div,".childBeltQuantity",data.beltQuantity);
   const drive=div.querySelector(".childDriveArrangement"); if(drive) childDriveChanged(drive);
 }
 
@@ -2954,13 +2958,11 @@ div=>{
 const val = selector => div.querySelector(selector)?.value || "";
 children.push({
   childAssetType: val(".childType"), childAssetName: val(".childName"), axis: val(".childAxis"),
-  brand: val(".childBrand"), model: val(".childModel"), partNumber: val(".childPartNumber"), serialNumber: val(".childSerial"),
-  locationOnMachine: val(".childLocation"), function: val(".childFunction"), condition: val(".childCondition"),
-  powerKw: val(".childPowerKw"), voltageV: val(".childVoltageV"), currentA: val(".childCurrentA"), frequencyHz: val(".childFrequency"),
-  rpm: val(".childRpm"), phase: val(".childPhase"), mountingType: val(".childMounting"), flangeType: val(".childFlange"),
+  brand: val(".childBrand"), model: val(".childModel"), condition: val(".childCondition"),
+  powerKw: val(".childPowerKw"), voltageV: val(".childVoltageV"), currentA: val(".childCurrentA"),
+  rpm: val(".childRpm"), phase: val(".childPhase"), mountingType: val(".childMounting"),
   driveArrangement: val(".childDriveArrangement"), beltType: val(".childBeltType"), beltNumber: val(".childBeltNumber"),
-  beltManufacturer: val(".childBeltManufacturer"), beltLength: val(".childBeltLength"), beltQuantity: val(".childBeltQuantity"),
-  driverPulley: val(".childDriverPulley"), drivenPulley: val(".childDrivenPulley"), remarks: val(".childRemarks")
+  beltManufacturer: val(".childBeltManufacturer"), beltLength: val(".childBeltLength"), beltQuantity: val(".childBeltQuantity")
 });
 
 });
