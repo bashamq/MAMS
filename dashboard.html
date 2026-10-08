@@ -133,7 +133,104 @@ return tools.map((t,i)=>{
 function renderFilters(lines,shops){const l=document.getElementById("downloadLine"),s=document.getElementById("downloadShop");const lv=l.value,sv=s.value;l.innerHTML='<option value="ALL">All Production Lines</option>';(lines||[]).forEach(x=>l.innerHTML+=`<option value="${escAttr(x.name)}">${esc(x.name)}</option>`);s.innerHTML='<option value="ALL">All Machine Shops</option>';Object.keys(shops||{}).forEach(x=>s.innerHTML+=`<option value="${escAttr(x)}">${esc(x)}</option>`);if([...l.options].some(o=>o.value===lv))l.value=lv;if([...s.options].some(o=>o.value===sv))s.value=sv}
 function resetFilters(){document.getElementById("downloadLine").value="ALL";document.getElementById("downloadShop").value="ALL"}
 function renderAssetTable(list){const body=document.getElementById("assetTable");body.innerHTML="";if(!list.length){body.innerHTML='<tr><td colspan="8" class="loading">No asset records.</td></tr>';return}list.forEach(a=>{body.innerHTML+=`<tr><td><button style="padding:6px 9px;min-height:34px;background:#2563eb;color:#fff" onclick="openAsset('${jsq(a.assetNumber)}')">${esc(a.assetNumber)}</button></td><td>${esc(a.machineName)}</td><td>${esc(a.machineType)}</td><td>${esc(a.machineShop)}</td><td>${esc(a.productionLine)}</td><td>${esc(a.processLocation)}</td><td>${esc(a.partName)}</td><td>${(a.children||[]).length}</td></tr>`})}
-function downloadReport(){const line=document.getElementById("downloadLine").value,shop=document.getElementById("downloadShop").value;let list=(dashboardData.assets||[]).filter(a=>(line==='ALL'||a.productionLine===line)&&(shop==='ALL'||a.machineShop===shop));if(!list.length){showToast("No assets found for selected filter.");return}const rows=[["Asset Number","Machine Name","Machine Type","Machine Shop","Production Line","Process Location / Operation No.","Operation / Process","Part Name","Manufacturer","Controller","Serial Number","Child Type","Child Name","Axis","Child Manufacturer","Child Model","Child Part Number","Child Serial","Power kW","Voltage V","Current A","Flange Type","Drive Arrangement","Belt Number","Tool Type","Tool Name","Tool Number","Tool Manufacturer","Tool Model","Tool Part Number","Tool Specification","Tool Quantity"]];list.forEach(a=>{const children=a.children||[],tools=a.tools||[];if(!children.length&&!tools.length)rows.push([a.assetNumber,a.machineName,a.machineType,a.machineShop,a.productionLine,a.processLocation,a.operationProcess,a.partName,a.manufacturer,a.controller,a.serialNumber,"","","","","","","","","","","","","","","","","","","",""]);children.forEach(c=>rows.push([a.assetNumber,a.machineName,a.machineType,a.machineShop,a.productionLine,a.processLocation,a.operationProcess,a.partName,a.manufacturer,a.controller,a.serialNumber,c.childAssetType,c.childAssetName,c.axis||"",c.brand||"",c.model||"",c.partNumber||"",c.serialNumber||"",c.powerKw||"",c.voltageV||"",c.currentA||"",c.flangeType||"",c.driveArrangement||"",c.beltNumber||"","","","","","","","","",""]));tools.forEach(t=>rows.push([a.assetNumber,a.machineName,a.machineType,a.machineShop,a.productionLine,a.processLocation,a.operationProcess,a.partName,a.manufacturer,a.controller,a.serialNumber,"","","","","","","","","","","","","",t.toolType||"",t.toolName||"",t.toolNumber||"",t.manufacturer||"",t.model||"",t.partNumber||"",t.specification||"",t.quantity||""]))});const csv=rows.map(r=>r.map(csvCell).join(",")).join("\r\n");const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="MAMS_Asset_Report_"+new Date().toISOString().slice(0,10)+".csv";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);showToast("Report downloaded: "+list.length+" asset(s)");}
+function downloadReport(){
+const line=document.getElementById("downloadLine").value;
+const shop=document.getElementById("downloadShop").value;
+const list=(dashboardData.assets||[]).filter(a=>(line==='ALL'||a.productionLine===line)&&(shop==='ALL'||a.machineShop===shop));
+if(!list.length){showToast("No assets found for selected filter.");return}
+
+// One Asset is kept together: Machine row -> Child Asset rows -> Tool rows -> next Asset.
+// The Asset Number and main machine information are repeated on every linked row so
+// the CSV remains easy to filter/sort without losing the relationship.
+const headers=[
+  "Record Type","Asset Number","Machine Name","Machine Type","Machine Shop","Production Line",
+  "Process Location / Operation No.","Operation / Process","Part Name","Machine Manufacturer",
+  "Controller","Machine Serial Number",
+  "Child Asset Type","Child Asset Name","Child Manufacturer","Child Model Number","Condition",
+  "Power (kW)","Voltage (V)","Current (A)","RPM","Phase","Mounting Type","Drive Arrangement",
+  "Belt Type","Belt Number / Size","Belt Manufacturer","Belt Length","Belt Quantity",
+  "Tool Steps","Tool Status","Tool Remarks","Tool Component Details"
+];
+const rows=[headers];
+
+const base=a=>[
+  "",a.assetNumber||"",a.machineName||"",a.machineType||"",a.machineShop||"",a.productionLine||"",
+  a.processLocation||"",a.operationProcess||"",a.partName||"",a.manufacturer||"",a.controller||"",a.serialNumber||""
+];
+
+list.forEach((a,assetIndex)=>{
+  const children=a.children||[];
+  const tools=a.tools||[];
+  const hasLinked=children.length||tools.length;
+
+  // Machine summary row
+  const machineRow=base(a);
+  machineRow[0]="MACHINE";
+  while(machineRow.length<headers.length) machineRow.push("");
+  rows.push(machineRow);
+
+  // Child Assets — current simplified Child_Assets structure
+  children.forEach(c=>{
+    const r=base(a);
+    r[0]="CHILD ASSET";
+    r.push(
+      c.childAssetType||"", c.childAssetName||"", c.brand||"", c.model||"", c.condition||"",
+      c.powerKw||"", c.voltageV||"", c.currentA||"", c.rpm||"", c.phase||"", c.mountingType||"",
+      c.driveArrangement||"", c.beltType||"", c.beltNumber||"", c.beltManufacturer||"", c.beltLength||"", c.beltQuantity||"",
+      "","","", ""
+    );
+    rows.push(r);
+  });
+
+  // Machine Tools — V6 Tool Assemblies with their component sequence/details
+  tools.forEach(t=>{
+    const r=base(a);
+    r[0]="MACHINE TOOL";
+    const componentDetails=(t.components||[]).map(c=>{
+      const vals=[];
+      const add=(label,v)=>{if(String(v??"").trim()!=="")vals.push(label+": "+v)};
+      add("STEP "+(c.stepNo||""),c.componentTitle||c.componentType||"");
+      add("Type",c.componentType);
+      add("Model",c.modelNumber);
+      add("Size",c.size);
+      add("Specification",c.specification);
+      add("Manufacturer",c.manufacturer);
+      add("Part Number",c.partNumber);
+      add("Material",c.material);
+      add("Grade",c.grade);
+      add("Chanfring Ring",c.chanfringRing);
+      add("Rod Diameter",c.rodDiameter);
+      add("Chanfring Ring Model",c.chanfringRingModel);
+      add("Chanfring Ring Size",c.chanfringRingSize);
+      add("Chanfring Ring Cutting Insert",c.chanfringRingCuttingInsert);
+      add("Cutting Insert Model / Grade",c.cuttingInsertModelGrade);
+      add("Cutting Insert Size",c.cuttingInsertSize);
+      add("Remarks",c.remarks);
+      return vals.join(" | ");
+    }).join("\n");
+    r.push(
+      "","","","","","","","","","","","","","","","",
+      t.toolSteps||"",t.toolStatus||"",t.remarks||"",componentDetails
+    );
+    rows.push(r);
+  });
+
+  // Blank separator keeps each Asset visually grouped in Excel/CSV.
+  if(assetIndex<list.length-1) rows.push([]);
+});
+
+const csv=rows.map(r=>r.map(csvCell).join(",")).join("\r\n");
+const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"});
+const url=URL.createObjectURL(blob);
+const a=document.createElement("a");
+a.href=url;
+a.download="MAMS_Asset_Report_"+new Date().toISOString().slice(0,10)+".csv";
+document.body.appendChild(a);
+a.click();
+a.remove();
+URL.revokeObjectURL(url);
+showToast("Report downloaded: "+list.length+" asset(s)");
+}
 function csvCell(v){return '"'+String(v??"").replace(/"/g,'""')+'"'}
 function esc(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
 function escAttr(v){return String(v??"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
