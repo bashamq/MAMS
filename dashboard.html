@@ -139,84 +139,96 @@ const shop=document.getElementById("downloadShop").value;
 const list=(dashboardData.assets||[]).filter(a=>(line==='ALL'||a.productionLine===line)&&(shop==='ALL'||a.machineShop===shop));
 if(!list.length){showToast("No assets found for selected filter.");return}
 
-// One Asset is kept together: Machine row -> Child Asset rows -> Tool rows -> next Asset.
-// The Asset Number and main machine information are repeated on every linked row so
-// the CSV remains easy to filter/sort without losing the relationship.
+// IMPORTANT: One Asset = One CSV row.
+// All machine, child-asset and tool information belonging to that Asset
+// is kept together in the same row. Multiple child assets/tools are stored
+// as line-separated details inside their dedicated cells.
 const headers=[
-  "Record Type","Asset Number","Machine Name","Machine Type","Machine Shop","Production Line",
+  "Asset Number","Machine Name","Machine Type","Machine Shop","Production Line",
   "Process Location / Operation No.","Operation / Process","Part Name","Machine Manufacturer",
-  "Controller","Machine Serial Number",
-  "Child Asset Type","Child Asset Name","Child Manufacturer","Child Model Number","Condition",
-  "Power (kW)","Voltage (V)","Current (A)","RPM","Phase","Mounting Type","Drive Arrangement",
-  "Belt Type","Belt Number / Size","Belt Manufacturer","Belt Length","Belt Quantity",
-  "Tool Steps","Tool Status","Tool Remarks","Tool Component Details"
+  "Controller","Machine Serial Number","Child Assets (Complete Details)","Machine Tools (Complete Details)"
 ];
 const rows=[headers];
 
-const base=a=>[
-  "",a.assetNumber||"",a.machineName||"",a.machineType||"",a.machineShop||"",a.productionLine||"",
-  a.processLocation||"",a.operationProcess||"",a.partName||"",a.manufacturer||"",a.controller||"",a.serialNumber||""
-];
+function clean(v){return String(v??"").trim()}
+function childDetails(children){
+  if(!children.length) return "";
+  return children.map((c,i)=>{
+    const lines=[];
+    lines.push(`${i+1}. ${clean(c.childAssetName)||"Child Asset"}`);
+    const add=(label,v)=>{if(clean(v)) lines.push(`${label}: ${clean(v)}`)};
+    add("Type",c.childAssetType);
+    add("Manufacturer",c.brand);
+    add("Model Number",c.model);
+    add("Condition",c.condition);
+    add("Power (kW)",c.powerKw);
+    add("Voltage (V)",c.voltageV);
+    add("Current (A)",c.currentA);
+    add("RPM",c.rpm);
+    add("Phase",c.phase);
+    add("Mounting Type",c.mountingType);
+    add("Drive Arrangement",c.driveArrangement);
+    add("Belt Type",c.beltType);
+    add("Belt Number / Size",c.beltNumber);
+    add("Belt Manufacturer",c.beltManufacturer);
+    add("Belt Length",c.beltLength);
+    add("Belt Quantity",c.beltQuantity);
+    return lines.join("\n");
+  }).join("\n\n");
+}
+function toolDetails(tools){
+  if(!tools.length) return "";
+  return tools.map((t,i)=>{
+    const lines=[];
+    lines.push(`${i+1}. ${clean(t.toolSteps)?clean(t.toolSteps)+"-Step Tool":"Machine Tool"}`);
+    const add=(label,v)=>{if(clean(v)) lines.push(`${label}: ${clean(v)}`)};
+    add("Machine Type",t.machineType);
+    add("Production Line",t.productionLine);
+    add("Position / Operation",t.processLocation);
+    add("Operation / Process",t.operationProcess);
+    add("Part Name",t.partName);
+    add("Tool Status",t.toolStatus);
+    add("Tool Remarks",t.remarks);
+    (t.components||[]).forEach((c,idx)=>{
+      lines.push(`  STEP ${clean(c.stepNo)||idx+1} — ${clean(c.componentTitle)||clean(c.componentType)||"Component"}`);
+      addComp=(label,v)=>{if(clean(v)) lines.push(`    ${label}: ${clean(v)}`)};
+      addComp("Component Type",c.componentType);
+      addComp("Model Number",c.modelNumber);
+      addComp("Size",c.size);
+      addComp("Specification",c.specification);
+      addComp("Manufacturer",c.manufacturer);
+      addComp("Part Number",c.partNumber);
+      addComp("Material",c.material);
+      addComp("Grade",c.grade);
+      addComp("Remarks",c.remarks);
+      addComp("Chanfring Ring",c.chanfringRing);
+      addComp("Rod Diameter",c.rodDiameter);
+      addComp("Chanfring Ring Model Number",c.chanfringRingModel);
+      addComp("Chanfring Ring Size",c.chanfringRingSize);
+      addComp("Chanfring Ring Cutting Insert",c.chanfringRingCuttingInsert);
+      addComp("Cutting Insert Model / Grade",c.cuttingInsertModelGrade);
+      addComp("Cutting Insert Size",c.cuttingInsertSize);
+    });
+    return lines.join("\n");
+  }).join("\n\n");
+}
 
-list.forEach((a,assetIndex)=>{
-  const children=a.children||[];
-  const tools=a.tools||[];
-  const hasLinked=children.length||tools.length;
-
-  // Machine summary row
-  const machineRow=base(a);
-  machineRow[0]="MACHINE";
-  while(machineRow.length<headers.length) machineRow.push("");
-  rows.push(machineRow);
-
-  // Child Assets — current simplified Child_Assets structure
-  children.forEach(c=>{
-    const r=base(a);
-    r[0]="CHILD ASSET";
-    r.push(
-      c.childAssetType||"", c.childAssetName||"", c.brand||"", c.model||"", c.condition||"",
-      c.powerKw||"", c.voltageV||"", c.currentA||"", c.rpm||"", c.phase||"", c.mountingType||"",
-      c.driveArrangement||"", c.beltType||"", c.beltNumber||"", c.beltManufacturer||"", c.beltLength||"", c.beltQuantity||"",
-      "","","", ""
-    );
-    rows.push(r);
-  });
-
-  // Machine Tools — V6 Tool Assemblies with their component sequence/details
-  tools.forEach(t=>{
-    const r=base(a);
-    r[0]="MACHINE TOOL";
-    const componentDetails=(t.components||[]).map(c=>{
-      const vals=[];
-      const add=(label,v)=>{if(String(v??"").trim()!=="")vals.push(label+": "+v)};
-      add("STEP "+(c.stepNo||""),c.componentTitle||c.componentType||"");
-      add("Type",c.componentType);
-      add("Model",c.modelNumber);
-      add("Size",c.size);
-      add("Specification",c.specification);
-      add("Manufacturer",c.manufacturer);
-      add("Part Number",c.partNumber);
-      add("Material",c.material);
-      add("Grade",c.grade);
-      add("Chanfring Ring",c.chanfringRing);
-      add("Rod Diameter",c.rodDiameter);
-      add("Chanfring Ring Model",c.chanfringRingModel);
-      add("Chanfring Ring Size",c.chanfringRingSize);
-      add("Chanfring Ring Cutting Insert",c.chanfringRingCuttingInsert);
-      add("Cutting Insert Model / Grade",c.cuttingInsertModelGrade);
-      add("Cutting Insert Size",c.cuttingInsertSize);
-      add("Remarks",c.remarks);
-      return vals.join(" | ");
-    }).join("\n");
-    r.push(
-      "","","","","","","","","","","","","","","","",
-      t.toolSteps||"",t.toolStatus||"",t.remarks||"",componentDetails
-    );
-    rows.push(r);
-  });
-
-  // Blank separator keeps each Asset visually grouped in Excel/CSV.
-  if(assetIndex<list.length-1) rows.push([]);
+list.forEach(a=>{
+  rows.push([
+    a.assetNumber||"",
+    a.machineName||"",
+    a.machineType||"",
+    a.machineShop||"",
+    a.productionLine||"",
+    a.processLocation||"",
+    a.operationProcess||"",
+    a.partName||"",
+    a.manufacturer||"",
+    a.controller||"",
+    a.serialNumber||"",
+    childDetails(a.children||[]),
+    toolDetails(a.tools||[])
+  ]);
 });
 
 const csv=rows.map(r=>r.map(csvCell).join(",")).join("\r\n");
@@ -224,12 +236,12 @@ const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"});
 const url=URL.createObjectURL(blob);
 const a=document.createElement("a");
 a.href=url;
-a.download="MAMS_Asset_Report_"+new Date().toISOString().slice(0,10)+".csv";
+a.download="MAMS_Asset_Report_One_Row_Per_Asset_"+new Date().toISOString().slice(0,10)+".csv";
 document.body.appendChild(a);
 a.click();
 a.remove();
 URL.revokeObjectURL(url);
-showToast("Report downloaded: "+list.length+" asset(s)");
+showToast("Report downloaded: "+list.length+" asset(s) — one row per asset");
 }
 function csvCell(v){return '"'+String(v??"").replace(/"/g,'""')+'"'}
 function esc(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
